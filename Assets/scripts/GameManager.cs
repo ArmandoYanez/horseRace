@@ -1,76 +1,109 @@
 using UnityEngine;
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
-    [Header("Horse Selection")]
+    [Header("Player Selection")]
     public HorseSO selectedHorseSO;
 
-    [Header("Scene Horses")]
+    [Header("Scene Horses (TOP → BOTTOM order)")]
     public HorseView[] horseViews;
 
-    private HorseRuntime activeHorse;
-    private HorseView activeHorseView;
+    [Header("UI")]
+    public TurnUI turnUI;
 
-    private bool gameStarted = false;
+    private HorseRuntime[] horses;
+    private int playerIndex = -1;
+    private bool resolvingTurn = false;
 
     void Start()
     {
-        StartGame();
+        StartRace();
     }
-
-    void StartGame()
+    
+    void StartRace()
     {
-        // Buscar el HorseView que corresponde al SO seleccionado
-        foreach (var view in horseViews)
+        horses = new HorseRuntime[horseViews.Length];
+
+        for (int i = 0; i < horseViews.Length; i++)
         {
-            if (view.horseData == selectedHorseSO)
+            horses[i] = new HorseRuntime(horseViews[i].horseData);
+            horseViews[i].Initialize(horses[i]);
+
+            if (horseViews[i].horseData == selectedHorseSO)
+                playerIndex = i;
+        }
+
+        if (playerIndex == -1)
+        {
+            Debug.LogError("❌ Selected horse not found in HorseViews");
+            return;
+        }
+
+        Debug.Log($"🐎 Player horse: {selectedHorseSO.horseName}");
+        turnUI.Show();
+    }
+    
+    public void PlayerChooseShot(ShotType shot)
+    {
+        if (resolvingTurn) return;
+
+        turnUI.Hide();
+        StartCoroutine(ResolveTurn(shot));
+    }
+    
+    IEnumerator ResolveTurn(ShotType playerShot)
+    {
+        resolvingTurn = true;
+
+        for (int i = 0; i < horses.Length; i++)
+        {
+            ShotType shotToUse =
+                (i == playerIndex)
+                    ? playerShot
+                    : AIShotChooser.ChooseShot();
+
+            int gained = ShotResolver.ResolvePureLuck(shotToUse);
+            horses[i].currentPoints += gained;
+
+            Debug.Log(
+                gained > 0
+                    ? $"{horseViews[i].horseData.horseName} → +{gained}"
+                    : $"{horseViews[i].horseData.horseName} → FAIL"
+            );
+
+            horseViews[i].UpdatePositionSmooth();
+
+            // Delay para ver el avance uno por uno
+            yield return new WaitForSeconds(0.45f);
+        }
+        
+        for (int i = 0; i < horses.Length; i++)
+        {
+            if (horses[i].currentPoints >= horses[i].baseData.pointsToWin)
             {
-                activeHorse = new HorseRuntime(selectedHorseSO);
-                activeHorseView = view;
-
-                activeHorseView.Initialize(activeHorse);
-
-                gameStarted = true;
-
-                Debug.Log($"🐎 Playing with {selectedHorseSO.horseName}");
-                return;
+                Debug.Log($"🏁 {horses[i].baseData.horseName} WINS");
+                yield return new WaitForSeconds(1f);
+                ResetRace();
+                yield break;
             }
         }
 
-        Debug.LogError("Selected horse not found in scene");
+        resolvingTurn = false;
+        turnUI.Show();
     }
 
-    void Update()
+
+    void ResetRace()
     {
-        if (!gameStarted) return;
+        resolvingTurn = false;
 
-        if (Input.GetKeyDown(KeyCode.Alpha1))
-            PlayTurn(ShotType.Low);
-
-        if (Input.GetKeyDown(KeyCode.Alpha2))
-            PlayTurn(ShotType.Medium);
-
-        if (Input.GetKeyDown(KeyCode.Alpha3))
-            PlayTurn(ShotType.High);
-    }
-
-    void PlayTurn(ShotType shot)
-    {
-        int gained = ShotResolver.ResolvePureLuck(shot);
-        activeHorse.currentPoints += gained;
-
-        Debug.Log(
-            gained > 0
-                ? $"{shot} → +{gained} (Total: {activeHorse.currentPoints})"
-                : $"{shot} → FAIL"
-        );
-
-        activeHorseView.UpdatePositionSmooth();
-
-        if (activeHorse.currentPoints >= activeHorse.baseData.pointsToWin)
+        for (int i = 0; i < horses.Length; i++)
         {
-            Debug.Log("🏁 FINISH LINE REACHED");
-            gameStarted = false;
+            horses[i].currentPoints = horses[i].baseData.startingPoints;
+            horseViews[i].UpdatePositionSmooth();
         }
+
+        turnUI.Show();
     }
 }
