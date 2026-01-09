@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using Managers;
 
 public class GameManager : MonoBehaviour
 {
@@ -11,6 +12,8 @@ public class GameManager : MonoBehaviour
 
     [Header("UI")]
     public TurnUI turnUI;
+    
+    public SoundLibrary uiSfx;
 
     private HorseRuntime[] horses;
     private int playerIndex = -1;
@@ -36,7 +39,7 @@ public class GameManager : MonoBehaviour
 
         if (playerIndex == -1)
         {
-            Debug.LogError("❌ Selected horse not found in HorseViews");
+            Debug.LogError(" Selected horse not found in HorseViews");
             return;
         }
 
@@ -72,12 +75,27 @@ public class GameManager : MonoBehaviour
                     : $"{horseViews[i].horseData.horseName} → FAIL"
             );
 
+            // MOSTRAR RESULTADO PRIMERO
+            HorseResultSpawner spawner =
+                horseViews[i].GetComponent<HorseResultSpawner>();
+                AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
+
+            if (spawner != null)
+            {
+                spawner.ShowResult(gained);
+            }
+
+            // ESPERAR A QUE SE LEA EL RESULTADO
+            yield return new WaitForSeconds(1f);
+
+            // AHORA MOVER EL CABALLO
             horseViews[i].UpdatePositionSmooth();
 
-            // Delay para ver el avance uno por uno
-            yield return new WaitForSeconds(0.45f);
+            // PEQUEÑO RESPIRO ANTES DEL SIGUIENTE
+            yield return new WaitForSeconds(0.3f);
         }
-        
+
+        // 🏁 CHECAR GANADOR
         for (int i = 0; i < horses.Length; i++)
         {
             if (horses[i].currentPoints >= horses[i].baseData.pointsToWin)
@@ -92,6 +110,7 @@ public class GameManager : MonoBehaviour
         resolvingTurn = false;
         turnUI.Show();
     }
+
 
 
     void ResetRace()

@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f030b0211b25a04cbd4671083f0cb4d, type: 3}
+  m_Name: Music
+  m_EditorClassIdentifier: 
+  output: {fileID: 0}
+  spatial: 0
+  loop: 1
+  sounds:
+  - name: Music.Race.InRace
+    clip: {fileID: 8300000, guid: ecf0cfad8be4490408503611c1a8a6bb, type: 3}
+    volume: 1
+    pitch: 1

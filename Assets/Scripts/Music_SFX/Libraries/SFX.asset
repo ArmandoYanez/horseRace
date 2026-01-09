@@ -1,0 +1,30 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f030b0211b25a04cbd4671083f0cb4d, type: 3}
+  m_Name: SFX
+  m_EditorClassIdentifier: 
+  output: {fileID: 0}
+  spatial: 0
+  loop: 0
+  sounds:
+  - name: Sfx.Race.FrontManVoice
+    clip: {fileID: 8300000, guid: 4065599e8c5cd174caf76cbfc95f6300, type: 3}
+    volume: 1
+    pitch: 1
+  - name: Sfx.Race.PopScore
+    clip: {fileID: 8300000, guid: 98eebe7cab3b5c94cbd7c07e882075cf, type: 3}
+    volume: 1
+    pitch: 1
+  - name: Sfx.Race.ClickButton
+    clip: {fileID: 8300000, guid: 3f328eda8ca466343b1dbc51c343ee25, type: 3}
+    volume: 1
+    pitch: 1
