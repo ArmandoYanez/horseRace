@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: The Old Man from the Workshop
+  m_EditorClassIdentifier: 
+  dialogueTemplate: "You\u2019re new around here, aren't you? I like you. In the
+    next round, I\u2019m going to modify your horse, so when the time comes, make
+    the most of it and stick to low shots."
+  dialogueTemplate_Spanish: "Eres nuevo por aqu\xED, \xBFverdad? Me caes bien. En
+    un par de rondas, voy a modificar tu caballo, as\xED que, cuando llegue el momento,
+    aprov\xE9chalo al m\xE1ximo y c\xED\xF1ete a tiros seguros."
+  eventType: 2
+  minRound: 1
+  maxRound: 12
+  effect: {fileID: 11400000, guid: 8f6435b33a9b83341bf7e87046faf98c, type: 2}

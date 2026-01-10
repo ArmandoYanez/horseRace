@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: The Bookmaker
+  m_EditorClassIdentifier: 
+  dialogueTemplate: These races are rigged, if you ask me. I'll mod the machine for
+    you; just pay me later. +1 to all rolls.
+  dialogueTemplate_Spanish: "Creo que estas carreras son muy injustas. Modificar\xE9
+    la m\xE1quina por ti; me lo pagar\xE1s despu\xE9s. +1 en todas las tiradas."
+  eventType: 2
+  minRound: 2
+  maxRound: 13
+  effect: {fileID: 11400000, guid: 986612376f09b1c4295e94c2367ea6fd, type: 2}

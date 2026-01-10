@@ -1,0 +1,24 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: The Nervous Bettor
+  m_EditorClassIdentifier: 
+  dialogueTemplate: "I put a risky bet on you losing the next race. Throw it on purpose,
+    and then I\u2019ll make some tweaks to the machine. If you do, you\u2019ll get
+    a real edge in a future races."
+  dialogueTemplate_Spanish: "Apost\xE9 a que perder\xE1s la pr\xF3xima carrera. Apuesta
+    a prop\xF3sito y luego har\xE9 algunos ajustes a la m\xE1quina. Si lo haces,
+    tendr\xE1s una gran ventaja en futuras carreras."
+  eventType: 2
+  minRound: 1
+  maxRound: 10
+  effect: {fileID: 11400000, guid: b84f0719d5fff6748b88943c32c37466, type: 2}

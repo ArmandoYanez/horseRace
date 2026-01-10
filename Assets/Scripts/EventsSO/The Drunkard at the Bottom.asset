@@ -1,0 +1,21 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: The Drunkard at the Bottom
+  m_EditorClassIdentifier: 
+  dialogueTemplate: I've seen many like you. They all think they'll be the exception.
+  dialogueTemplate_Spanish: "He visto a muchos como t\xFA. Todos creen que ser\xE1n
+    la excepci\xF3n."
+  eventType: 0
+  minRound: 1
+  maxRound: 15
+  effect: {fileID: 0}

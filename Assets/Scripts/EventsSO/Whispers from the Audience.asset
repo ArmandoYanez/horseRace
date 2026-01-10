@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: Whispers from the Audience
+  m_EditorClassIdentifier: 
+  dialogueTemplate: They say the final race is rigged. Nobody wins around here without
+    getting their hands dirty.
+  dialogueTemplate_Spanish: "Dicen que la carrera final est\xE1 ama\xF1ada. Aqu\xED
+    nadie gana sin ensuciarse las manos."
+  eventType: 0
+  minRound: 5
+  maxRound: 15
+  effect: {fileID: 0}

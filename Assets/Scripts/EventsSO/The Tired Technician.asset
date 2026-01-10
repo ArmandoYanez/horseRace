@@ -1,0 +1,22 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
+  m_Name: The Tired Technician
+  m_EditorClassIdentifier: 
+  dialogueTemplate: I'm fed up with seeing the champion always win. In a few rounds,
+    I'm going to loosen up a gear. He won't run so well that day.
+  dialogueTemplate_Spanish: "Estoy harto de ver al campe\xF3n ganar siempre. En unas
+    cuantas rondas, voy a aflojar una marcha. Ese d\xEDa no correr\xE1 tan bien."
+  eventType: 2
+  minRound: 4
+  maxRound: 14
+  effect: {fileID: 11400000, guid: 89ac0af93804560408db9841a7524865, type: 2}
