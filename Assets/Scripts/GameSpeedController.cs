@@ -1,22 +1,37 @@
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 
-public class GameSpeedController : MonoBehaviour
+public class SpeedToggleButton : MonoBehaviour
 {
-    public float normalSpeed = 1f;
-    public float fastSpeed = 2f;
+    [Header("UI")]
+    public TextMeshProUGUI label;
 
-    private bool isFast = false;
+    [Header("Speed Steps")]
+    public float[] speeds = { 1f, 2f, 3f, 4f, 5f };
+
+    private int currentIndex = 0;
+
+    void Start()
+    {
+        ApplySpeed();
+    }
 
     public void ToggleSpeed()
     {
-        isFast = !isFast;
-        Time.timeScale = isFast ? fastSpeed : normalSpeed;
-        Time.fixedDeltaTime = 0.03f * Time.timeScale;
+        currentIndex++;
+
+        if (currentIndex >= speeds.Length)
+            currentIndex = 0;
+
+        ApplySpeed();
     }
 
-    void OnDisable()
+    void ApplySpeed()
     {
-        Time.timeScale = normalSpeed;
-        Time.fixedDeltaTime = 0.03f;
+        Time.timeScale = speeds[currentIndex];
+
+        if (label != null)
+            label.text = $"x{speeds[currentIndex]}";
     }
 }

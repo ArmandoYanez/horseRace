@@ -17,6 +17,6 @@ MonoBehaviour:
   dialogueTemplate_Spanish: "Dicen que la carrera final est\xE1 ama\xF1ada. Aqu\xED
     nadie gana sin ensuciarse las manos."
   eventType: 0
-  minRound: 5
+  minRound: 14
   maxRound: 15
   effect: {fileID: 0}

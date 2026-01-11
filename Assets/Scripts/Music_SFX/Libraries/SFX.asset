@@ -28,3 +28,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: 3f328eda8ca466343b1dbc51c343ee25, type: 3}
     volume: 1
     pitch: 1
+  - name: Sfx.Race.BonusPoint
+    clip: {fileID: 8300000, guid: b1c944036e75451468ec4469ce53a741, type: 3}
+    volume: 1
+    pitch: 1.1

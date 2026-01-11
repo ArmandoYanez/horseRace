@@ -17,6 +17,6 @@ MonoBehaviour:
   dialogueTemplate_Spanish: "Mi pap\xE1 dice que la carrera final ya est\xE1 decidida.
     A menos que alguien manipule la m\xE1quina."
   eventType: 0
-  minRound: 4
-  maxRound: 15
+  minRound: 3
+  maxRound: 10
   effect: {fileID: 0}

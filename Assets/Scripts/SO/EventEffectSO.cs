@@ -172,7 +172,9 @@ public class RequireLossForBonusEffect : EventEffectSO
 
     public override void Apply(EventContext context)
     {
-        //context.gameManager.SchedulePermanentAllShotsOnLoss();
+        context.gameManager.SchedulePermanentAllShotsOnLoss(
+            context.currentRound + 1
+        );
     }
 }
 

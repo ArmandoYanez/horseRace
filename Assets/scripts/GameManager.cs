@@ -1,12 +1,17 @@
+using System;
 using UnityEngine;
 using System.Collections;
 using Managers;
 using System.Collections.Generic;
+using MoreMountains.Feedbacks;
+using TMPro;
 
 public class GameManager : MonoBehaviour
 {
     [Header("Rounds")]
     public int currentRound = 1;
+    public MMF_Player round_effect;
+    public TextMeshProUGUI roundtxt;
 
     #region Event lists
     [Header("Scheduled Effects")]
@@ -48,7 +53,8 @@ public class GameManager : MonoBehaviour
     private int playerIndex = -1;
     private bool resolvingTurn = false;
     public bool HasRaceInitialized { get; private set; }
-    private bool pendingPermanentAllShots = false;
+    private int lossRoundForPermanentAllShots = -1;
+
     public void InitRaceData()
     {
         StartRace();
@@ -76,7 +82,14 @@ public class GameManager : MonoBehaviour
     {
         currentRound++;
         Debug.Log($"🔄 Round {currentRound}");
+        round_effect.PlayFeedbacks();
     }
+
+    public void UpdateTextRound()
+    {
+        roundtxt.text = currentRound.ToString() + "/15";
+    }
+
     void StartRace()
     {
         horses = new HorseRuntime[horseViews.Length];
@@ -117,37 +130,38 @@ public class GameManager : MonoBehaviour
                     ? playerShot
                     : AIShotChooser.ChooseShot();
 
-            int gained = ShotResolver.ResolvePureLuck(shotToUse);
-    
-            // Afecta a los enemigos en ciertas rondas
-            if (i != playerIndex)
+            bool isPlayer = (i == playerIndex);
+
+// BASE (resultado puro)
+            int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
+
+// DEBUFF A ENEMIGOS
+            if (!isPlayer)
             {
                 int enemyPenalty = GetEnemyDebuffForCurrentRound();
-                if (enemyPenalty > 0 && gained > 0)
+                if (enemyPenalty > 0 && baseGain > 0)
                 {
-                    gained = Mathf.Max(0, gained - enemyPenalty);
+                    baseGain = Mathf.Max(0, baseGain - enemyPenalty);
                 }
             }
-            
-            // Bonus global
-            if (i == playerIndex)
-            {
-                gained += GetAllShotsBonusForCurrentRound();
-            }
-            
-            // Bonus solo Low
-            if (shotToUse == ShotType.Low && i == playerIndex)
-            {
-                gained += GetLowRiskBonusForCurrentRound();
-            }
-            
-            horses[i].currentPoints += gained;
 
-            Debug.Log(
-                gained > 0
-                    ? $"{horseViews[i].horseData.horseName} → +{gained}"
-                    : $"{horseViews[i].horseData.horseName} → FAIL"
-            );
+// BONUS (SOLO JUGADOR)
+            int bonusGain = 0;
+
+            if (isPlayer)
+            {
+                bonusGain += permanentAllShotsBonus;
+                bonusGain += GetAllShotsBonusForCurrentRound();
+
+                if (shotToUse == ShotType.Low)
+                {
+                    bonusGain += GetLowRiskBonusForCurrentRound();
+                }
+            }
+
+// OTAL REAL (SE SUMA SOLO UNA VEZ)
+            int totalGain = baseGain + bonusGain;
+            horses[i].currentPoints += totalGain;
 
             // MOSTRAR RESULTADO PRIMERO
             HorseResultSpawner spawner =
@@ -158,7 +172,16 @@ public class GameManager : MonoBehaviour
             }
             if (spawner != null)
             {
-                spawner.ShowResult(gained);
+                spawner.ShowResult(baseGain);
+                yield return new WaitForSeconds(0.8f);
+
+// MOSTRAR BONUS SEPARADO (AZUL)
+                if (isPlayer && bonusGain > 0)
+                {
+                    spawner.ShowBonusResult(bonusGain);
+                    AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.BonusPoints);
+                    yield return new WaitForSeconds(0.4f);
+                }
             }
 
             // ESPERAR A QUE SE LEA EL RESULTADO
@@ -183,7 +206,7 @@ public class GameManager : MonoBehaviour
                     int baseReward = 10; 
                     int bonusReward = GetRewardBonusForCurrentRound();
 
-                    int totalReward = baseReward + bonusReward;
+                    int totalReward = baseReward;
 
                     Debug.Log($"PLAYER WINS! Reward: {totalReward}");
 
@@ -194,17 +217,17 @@ public class GameManager : MonoBehaviour
                 {
                     Debug.Log($"{horses[i].baseData.horseName} WINS");
                     
-                    if (pendingPermanentAllShots)
+                    if (currentRound == lossRoundForPermanentAllShots)
                     {
                         permanentAllShotsBonus += 1;
-                        pendingPermanentAllShots = false;
+                        lossRoundForPermanentAllShots = -1;
 
-                        Debug.Log("Permanent All-Shots +1 unlocked!");
+                        Debug.Log("🔥 Permanent All-Shots +1 unlocked FOREVER");
                     }
                     
                     CheckLossConditions();
                 }
-                currentRound++;
+                ConsumeRound();
                 Debug.Log($"Round {currentRound}");
 
                 yield return new WaitForSeconds(1f);
@@ -273,10 +296,12 @@ public class GameManager : MonoBehaviour
         }
     }
     
-    public void SchedulePermanentAllShotsOnLoss()
+    public void SchedulePermanentAllShotsOnLoss(int targetRound)
     {
-        pendingPermanentAllShots = true;
+        lossRoundForPermanentAllShots = targetRound;
+        Debug.Log($"☠️ Must lose round {targetRound} to unlock permanent +1");
     }
+
     
     #endregion
     
@@ -297,7 +322,6 @@ public class GameManager : MonoBehaviour
         {
             targetRound = targetRound,
             bonusAmount = bonusAmount
-            
         });
 
         Debug.Log($"All shots bonus scheduled for round {targetRound} (+{bonusAmount})");
@@ -332,6 +356,7 @@ public class GameManager : MonoBehaviour
 
         Debug.Log($"📅 Reward bonus scheduled for round {targetRound} (+{extraReward})");
     }
+    
     public void ScheduleLossCondition(int triggerRound, int roundsAhead, int bonusAmount)
     {
         scheduledLossConditions.Add(new ScheduledLossCondition
@@ -368,12 +393,11 @@ public class GameManager : MonoBehaviour
     {
         int totalBonus = 0;
 
-        for (int i = scheduledAllShotsBonuses.Count - 1; i >= 0; i--)
+        for (int i = 0; i < scheduledAllShotsBonuses.Count; i++)
         {
             if (scheduledAllShotsBonuses[i].targetRound == currentRound)
             {
                 totalBonus += scheduledAllShotsBonuses[i].bonusAmount;
-                scheduledAllShotsBonuses.RemoveAt(i);
             }
         }
 

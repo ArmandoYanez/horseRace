@@ -12,10 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
   m_Name: The Drunkard at the Bottom
   m_EditorClassIdentifier: 
-  dialogueTemplate: I've seen many like you. They all think they'll be the exception.
+  dialogueTemplate: I've seen many like you. They all think they'll be the exception,
+    Good luck, kid, I have nothing to recommend to you.
   dialogueTemplate_Spanish: "He visto a muchos como t\xFA. Todos creen que ser\xE1n
-    la excepci\xF3n."
+    la excepci\xF3n, Buena suerte chico, no tengo nada para recomendar."
   eventType: 0
   minRound: 1
-  maxRound: 15
+  maxRound: 8
   effect: {fileID: 0}

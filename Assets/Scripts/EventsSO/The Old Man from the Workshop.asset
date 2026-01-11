@@ -19,6 +19,6 @@ MonoBehaviour:
     un par de rondas, voy a modificar tu caballo, as\xED que, cuando llegue el momento,
     aprov\xE9chalo al m\xE1ximo y c\xED\xF1ete a tiros seguros."
   eventType: 2
-  minRound: 1
+  minRound: 14
   maxRound: 12
-  effect: {fileID: 11400000, guid: 8f6435b33a9b83341bf7e87046faf98c, type: 2}
+  effect: {fileID: 0}

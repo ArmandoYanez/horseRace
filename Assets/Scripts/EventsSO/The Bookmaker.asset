@@ -13,10 +13,11 @@ MonoBehaviour:
   m_Name: The Bookmaker
   m_EditorClassIdentifier: 
   dialogueTemplate: These races are rigged, if you ask me. I'll mod the machine for
-    you; just pay me later. +1 to all rolls.
+    you; just pay me later. +1 to all rolls in the next race.
   dialogueTemplate_Spanish: "Creo que estas carreras son muy injustas. Modificar\xE9
-    la m\xE1quina por ti; me lo pagar\xE1s despu\xE9s. +1 en todas las tiradas."
+    la m\xE1quina por ti; me lo pagar\xE1s despu\xE9s. +1 en todas las tiradas en
+    la siguiente."
   eventType: 2
-  minRound: 2
-  maxRound: 13
+  minRound: 1
+  maxRound: 6
   effect: {fileID: 11400000, guid: 986612376f09b1c4295e94c2367ea6fd, type: 2}

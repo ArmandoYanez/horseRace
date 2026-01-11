@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: The Nervous Bettor
   m_EditorClassIdentifier: 
   dialogueTemplate: "I put a risky bet on you losing the next race. Throw it on purpose,
-    and then I\u2019ll make some tweaks to the machine. If you do, you\u2019ll get
-    a real edge in a future races."
+    and then I\u2019ll make some tweaks to the machine. If you do, you will have
+    +1 on your rolls forever."
   dialogueTemplate_Spanish: "Apost\xE9 a que perder\xE1s la pr\xF3xima carrera. Apuesta
     a prop\xF3sito y luego har\xE9 algunos ajustes a la m\xE1quina. Si lo haces,
     tendr\xE1s una gran ventaja en futuras carreras."
   eventType: 2
   minRound: 1
-  maxRound: 10
+  maxRound: 3
   effect: {fileID: 11400000, guid: b84f0719d5fff6748b88943c32c37466, type: 2}

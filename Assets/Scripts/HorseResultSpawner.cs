@@ -11,5 +11,12 @@ public class HorseResultSpawner : MonoBehaviour
             Instantiate(resultPopupPrefab, spawnPoint.position, Quaternion.identity);
 
         popup.Play(gained);
+    }    
+    public void ShowBonusResult(int gained)
+    {
+        ResultPopupFeedback popup =
+            Instantiate(resultPopupPrefab, spawnPoint.position, Quaternion.identity);
+        
+        popup.PlayColor(gained,Color.yellow);
     }
 }

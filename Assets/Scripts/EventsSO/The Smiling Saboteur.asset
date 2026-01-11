@@ -17,6 +17,6 @@ MonoBehaviour:
   dialogueTemplate_Spanish: "Puedo darle a tu caballo una ventaja en la pr\xF3xima
     carrera, pero tendr\xE1s que jugar con cuidado. Esta vez no hay tiros seguros."
   eventType: 2
-  minRound: 3
+  minRound: 14
   maxRound: 12
-  effect: {fileID: 11400000, guid: fd18ddf0082cde04c87f30c409dd809b, type: 2}
+  effect: {fileID: 0}

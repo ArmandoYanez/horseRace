@@ -18,6 +18,6 @@ MonoBehaviour:
     pr\xF3ximas carreras, la m\xE1quina responder\xE1 mejor a las apuestas bajas.
     Aprov\xE9chalo."
   eventType: 1
-  minRound: 9
+  minRound: 14
   maxRound: 14
   effect: {fileID: 0}
