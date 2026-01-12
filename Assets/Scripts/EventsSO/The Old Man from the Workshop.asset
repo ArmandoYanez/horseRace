@@ -13,12 +13,12 @@ MonoBehaviour:
   m_Name: The Old Man from the Workshop
   m_EditorClassIdentifier: 
   dialogueTemplate: "You\u2019re new around here, aren't you? I like you. In the
-    next round, I\u2019m going to modify your horse, so when the time comes, make
-    the most of it and stick to low shots."
+    next round, I\u2019m going to modify your horse, +1 to all low rolls in the next
+    round.\n"
   dialogueTemplate_Spanish: "Eres nuevo por aqu\xED, \xBFverdad? Me caes bien. En
     un par de rondas, voy a modificar tu caballo, as\xED que, cuando llegue el momento,
     aprov\xE9chalo al m\xE1ximo y c\xED\xF1ete a tiros seguros."
   eventType: 2
-  minRound: 14
-  maxRound: 12
-  effect: {fileID: 0}
+  minRound: 1
+  maxRound: 14
+  effect: {fileID: 11400000, guid: 8f6435b33a9b83341bf7e87046faf98c, type: 2}

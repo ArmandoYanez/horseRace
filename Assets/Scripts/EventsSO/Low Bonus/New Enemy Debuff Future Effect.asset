@@ -12,5 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 0}
   m_Name: New Enemy Debuff Future Effect
   m_EditorClassIdentifier: Assembly-CSharp::EnemyDebuffFutureEffect
-  roundsAhead: 2
+  roundsAhead: 1
   failPenalty: 1

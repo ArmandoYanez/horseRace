@@ -54,13 +54,14 @@ public class GameManager : MonoBehaviour
     private bool resolvingTurn = false;
     public bool HasRaceInitialized { get; private set; }
     private int lossRoundForPermanentAllShots = -1;
+    private int startingAdvantageThisRace = 0;
+    private bool lowDisabledThisRace = false;
 
     public void InitRaceData()
     {
         StartRace();
         HasRaceInitialized = true;
     }
-
     public void StartRaceFlow()
     {
         if (!HasRaceInitialized)
@@ -81,10 +82,9 @@ public class GameManager : MonoBehaviour
     public void ConsumeRound()
     {
         currentRound++;
-        Debug.Log($"🔄 Round {currentRound}");
+        Debug.Log($"Round {currentRound}");
         round_effect.PlayFeedbacks();
     }
-
     public void UpdateTextRound()
     {
         roundtxt.text = currentRound.ToString() + "/15";
@@ -112,6 +112,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"layer horse: {selectedHorseSO.horseName}");
         StartNewRound();
     }
+    
     public void PlayerChooseShot(ShotType shot)
     {
         if (resolvingTurn) return;
@@ -119,6 +120,7 @@ public class GameManager : MonoBehaviour
         turnUI.Hide();
         StartCoroutine(ResolveTurn(shot));
     }
+    
     IEnumerator ResolveTurn(ShotType playerShot)
     {
         resolvingTurn = true;
@@ -131,19 +133,29 @@ public class GameManager : MonoBehaviour
                     : AIShotChooser.ChooseShot();
 
             bool isPlayer = (i == playerIndex);
-
-// BASE (resultado puro)
-            int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
-
-// DEBUFF A ENEMIGOS
-            if (!isPlayer)
+            
+            // BLOQUEAR LOW SHOT SI HAY VENTAJA INICIAL
+            if (isPlayer &&
+                shotToUse == ShotType.Low &&
+                lowDisabledThisRace)
             {
-                int enemyPenalty = GetEnemyDebuffForCurrentRound();
-                if (enemyPenalty > 0 && baseGain > 0)
+                HorseResultSpawner spawner_nope =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                if (spawner_nope != null)
                 {
-                    baseGain = Mathf.Max(0, baseGain - enemyPenalty);
+                    spawner_nope.ShowCustomText("NOPE", Color.red);
+                    AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
                 }
+
+                yield return new WaitForSeconds(1f);
+                yield return new WaitForSeconds(0.3f);
+                continue;
             }
+
+            // BASE (resultado puro)
+            int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
+            bool enemyAdvancedThisTurn = !isPlayer && baseGain > 0;
 
 // BONUS (SOLO JUGADOR)
             int bonusGain = 0;
@@ -175,7 +187,7 @@ public class GameManager : MonoBehaviour
                 spawner.ShowResult(baseGain);
                 yield return new WaitForSeconds(0.8f);
 
-// MOSTRAR BONUS SEPARADO (AZUL)
+                // MOSTRAR BONUS SEPARADO (AZUL)
                 if (isPlayer && bonusGain > 0)
                 {
                     spawner.ShowBonusResult(bonusGain);
@@ -186,12 +198,57 @@ public class GameManager : MonoBehaviour
 
             // ESPERAR A QUE SE LEA EL RESULTADO
             yield return new WaitForSeconds(1f);
-
-            // AHORA MOVER EL CABALLO
+            
             horseViews[i].UpdatePositionSmooth();
 
-            // PEQUEÑO RESPIRO ANTES DEL SIGUIENTE
-            yield return new WaitForSeconds(0.3f);
+// espera pequeña para que se vea el avance
+            yield return new WaitForSeconds(0.35f);
+
+// APLICAR DEBUFF DESPUÉS DEL AVANCE (ENEMIGOS)
+            if (enemyAdvancedThisTurn)
+            {
+                int enemyPenalty = GetEnemyDebuffForCurrentRound();
+
+                if (enemyPenalty > 0)
+                {
+                    int maxBack =
+                        horses[i].currentPoints - horses[i].baseData.startingPoints;
+
+                    int penaltyApplied =
+                        Mathf.Clamp(enemyPenalty, 0, maxBack);
+
+                    if (penaltyApplied > 0)
+                    {
+                        horses[i].currentPoints -= penaltyApplied;
+
+                        HorseResultSpawner spawnerDebuff =
+                            horseViews[i].GetComponent<HorseResultSpawner>();
+
+                        if (spawnerDebuff != null)
+                        {
+                            spawnerDebuff.ShowCustomText(
+                                "-" + penaltyApplied,
+                                Color.red
+                            );
+
+                            if (AudioManager.Instance != null && uiSfx != null)
+                            {
+                                AudioManager.Instance.Play(
+                                    uiSfx,
+                                    ConstantManager.Sfx.Race.Negative
+                                );
+                            }
+                        }
+
+                        yield return new WaitForSeconds(0.35f);
+                        horseViews[i].UpdatePositionSmooth();
+                    }
+                }
+            }
+
+// respiro antes del siguiente caballo
+            yield return new WaitForSeconds(0.25f);
+            
         }
 
         // CHECAR GANADOR
@@ -241,9 +298,13 @@ public class GameManager : MonoBehaviour
         //currentRound++;
         StartNewRound();
     }
+    
     void ResetRace()
     {
         resolvingTurn = false;
+        startingAdvantageThisRace = 0;
+        lowDisabledThisRace = false;
+
 
         for (int i = 0; i < horses.Length; i++)
         {
@@ -268,10 +329,24 @@ public class GameManager : MonoBehaviour
     {
         int bonus = GetStartingPointsBonusForCurrentRound();
 
+        if (bonus >= 5)
+        {
+            lowDisabledThisRace = true;
+        }
+
         if (bonus > 0)
         {
             horses[playerIndex].currentPoints += bonus;
-            horseViews[playerIndex].UpdatePositionSmooth();
+
+            HorseResultSpawner spawner =
+                horseViews[playerIndex].GetComponent<HorseResultSpawner>();
+
+            if (spawner != null)
+            {
+                spawner.ShowBonusResult(bonus);
+            }
+
+            StartCoroutine(MoveAfterDelay(playerIndex, 0.6f));
         }
     }
     void CheckLossConditions()
@@ -422,12 +497,11 @@ public class GameManager : MonoBehaviour
     {
         int penalty = 0;
 
-        for (int i = scheduledEnemyDebuffs.Count - 1; i >= 0; i--)
+        for (int i = 0; i < scheduledEnemyDebuffs.Count; i++)
         {
             if (scheduledEnemyDebuffs[i].targetRound == currentRound)
             {
                 penalty += scheduledEnemyDebuffs[i].failPenalty;
-                scheduledEnemyDebuffs.RemoveAt(i);
             }
         }
 
@@ -459,10 +533,10 @@ public class GameManager : MonoBehaviour
         scheduledStartingPointsBonuses.RemoveAll(b => b.targetRound == currentRound);
         scheduledRewardBonuses.RemoveAll(b => b.targetRound == currentRound);
     }
-
-
-
-
-
-
+    
+    IEnumerator MoveAfterDelay(int index, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        horseViews[index].UpdatePositionSmooth();
+    }
 }

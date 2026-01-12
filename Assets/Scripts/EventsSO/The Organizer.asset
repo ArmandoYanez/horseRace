@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
   m_Name: The Organizer
   m_EditorClassIdentifier: 
-  dialogueTemplate: "I shouldn't have to tell you this\u2026 In one of the next races,
-    the machine will respond better to low bets. Take advantage of it."
-  dialogueTemplate_Spanish: "No deber\xEDa tener que dec\xEDrtelo... En una de las
-    pr\xF3ximas carreras, la m\xE1quina responder\xE1 mejor a las apuestas bajas.
-    Aprov\xE9chalo."
-  eventType: 1
-  minRound: 14
+  dialogueTemplate: I see your horse is quite focused, I'll give him a boost, your
+    low rolls will be +2 in the next round.
+  dialogueTemplate_Spanish: "Veo que tu caballo est\xE1 bastante concentrado, le
+    dar\xE9 un empuj\xF3n, sus lanzamientos bajos ser\xE1n +2 en la pr\xF3xima carrera.\r\n"
+  eventType: 2
+  minRound: 9
   maxRound: 14
-  effect: {fileID: 0}
+  effect: {fileID: 11400000, guid: 2fc7bc9dd25ae9043b5a912f9acf82e0, type: 2}

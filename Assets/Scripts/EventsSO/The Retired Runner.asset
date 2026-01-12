@@ -12,11 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 78b5abcc2f0aeb640881d54aed71ffd9, type: 3}
   m_Name: The Retired Runner
   m_EditorClassIdentifier: 
-  dialogueTemplate: I can teach you an old trick. It's dangerous, but effective.
-    During a future career, all your shots will be a little harder.
+  dialogueTemplate: I can teach you a trick, it's dangerous but we can try it, +1
+    on all your rolls next round
   dialogueTemplate_Spanish: "Puedo ense\xF1arte un viejo truco. Es peligroso, pero
     efectivo. En tu futura carrera, todos tus tiros ser\xE1n un poco m\xE1s dif\xEDciles."
   eventType: 2
-  minRound: 14
-  maxRound: 11
-  effect: {fileID: 0}
+  minRound: 1
+  maxRound: 14
+  effect: {fileID: 11400000, guid: 986612376f09b1c4295e94c2367ea6fd, type: 2}

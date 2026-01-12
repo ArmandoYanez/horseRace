@@ -32,3 +32,11 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: b1c944036e75451468ec4469ce53a741, type: 3}
     volume: 1
     pitch: 1.1
+  - name: Sfx.Race.Negative
+    clip: {fileID: 8300000, guid: 1c01b7d52df824e408889d39b8964025, type: 3}
+    volume: 1
+    pitch: 1
+  - name: Sfx.Race.NegativePoints
+    clip: {fileID: 8300000, guid: 9d368abdace25e64cbc27b845685944c, type: 3}
+    volume: 1
+    pitch: 1

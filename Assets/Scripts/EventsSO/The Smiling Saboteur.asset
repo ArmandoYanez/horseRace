@@ -13,10 +13,10 @@ MonoBehaviour:
   m_Name: The Smiling Saboteur
   m_EditorClassIdentifier: 
   dialogueTemplate: "I can give your horse a head start in the next race, but you\u2019ll
-    have to play it careful. No safe shots this time."
+    have to play it careful. You won't be able to use low rolls."
   dialogueTemplate_Spanish: "Puedo darle a tu caballo una ventaja en la pr\xF3xima
     carrera, pero tendr\xE1s que jugar con cuidado. Esta vez no hay tiros seguros."
   eventType: 2
-  minRound: 14
-  maxRound: 12
-  effect: {fileID: 0}
+  minRound: 5
+  maxRound: 14
+  effect: {fileID: 11400000, guid: fd18ddf0082cde04c87f30c409dd809b, type: 2}

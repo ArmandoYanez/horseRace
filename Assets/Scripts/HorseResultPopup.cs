@@ -47,4 +47,20 @@ public class ResultPopupFeedback : MonoBehaviour
         // Se destruye solo
         Destroy(gameObject, lifetime);
     }
+    
+    public void PlayColor_text(string gained, Color color)
+    {
+        // Texto
+        text.text = gained;
+        //text.color = gained > 0 ? Color.green : Color.red;
+
+        // Reset visual por si se reutiliza
+        canvasGroup.alpha = 0f;
+        transform.localScale = Vector3.one;
+        text.color = color;
+        popFeedback.PlayFeedbacks();
+
+        // Se destruye solo
+        Destroy(gameObject, lifetime);
+    }
 }

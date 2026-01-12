@@ -18,6 +18,8 @@ namespace Managers
                 public const string PopScore = "Sfx.Race.PopScore";
                 public const string ClickButton = "Sfx.Race.ClickButton";
                 public const string BonusPoints = "Sfx.Race.BonusPoint";
+                public const string Negative = "Sfx.Race.Negative";
+                public const string NegativePoints = "Sfx.Race.NegativePoints";
             }
         }
     }
