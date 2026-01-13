@@ -9,6 +9,6 @@ public class MusicLevelManager : MonoBehaviour
     void Start()
     {
         AudioManager.Instance.Play(currentSceneAudioLibrary, ConstantManager.Music.Race.InRace);
-        AudioManager.Instance.SetVolume(ConstantManager.Music.Race.InRace,0.7f);
+        AudioManager.Instance.SetVolume(ConstantManager.Music.Race.InRace,0.5f);
     }
 }

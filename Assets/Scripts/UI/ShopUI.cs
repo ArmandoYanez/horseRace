@@ -15,7 +15,7 @@ public class ShopUI : MonoBehaviour
     public List<ShopItemSO> allItems; // Todos los ítems posibles
 
     private System.Action onClose;
-
+    public ShopManager shopManager;
     public void Show(System.Action closeCallback)
     {
         gameObject.SetActive(true);
@@ -43,7 +43,7 @@ public class ShopUI : MonoBehaviour
             pool.RemoveAt(index);
 
             itemSlots[i].gameObject.SetActive(true);
-            itemSlots[i].Setup(item);
+            itemSlots[i].Setup(item, shopManager);
         }
     }
 

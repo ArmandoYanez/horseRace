@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19cf49e5a7ee4a642a79d3a164d94259, type: 3}
-  m_Name: carrot
+  m_Name: MID+1
   m_EditorClassIdentifier: 
-  prefab: {fileID: 231390492631646120, guid: bc4b85f7996a4064da7b6615179286ce, type: 3}
-  icon: {fileID: 21300000, guid: 15a7a9c45700eb446b0c36c550fe2cae, type: 3}
-  title: CARROT
-  description: +2 guaranteed on any of your shots on the next roll
-  price: 2
-  itemType: 1
+  prefab: {fileID: 6859728046243543978, guid: e663eb8f471f0e948a5378029a397831, type: 3}
+  icon: {fileID: 21300006, guid: 358b5d9f23bc9413e87c9948acc67ee1, type: 3}
+  title: MID +1
+  description: Your mid shots give an extra +1
+  price: 5
+  itemType: 0

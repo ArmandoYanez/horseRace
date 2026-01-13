@@ -10,11 +10,11 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 19cf49e5a7ee4a642a79d3a164d94259, type: 3}
-  m_Name: carrot
+  m_Name: Dice
   m_EditorClassIdentifier: 
-  prefab: {fileID: 231390492631646120, guid: bc4b85f7996a4064da7b6615179286ce, type: 3}
-  icon: {fileID: 21300000, guid: 15a7a9c45700eb446b0c36c550fe2cae, type: 3}
-  title: CARROT
-  description: +2 guaranteed on any of your shots on the next roll
-  price: 2
+  prefab: {fileID: 3793958148678143650, guid: cf3f274f7246fbd4e87665a8049ebfb7, type: 3}
+  icon: {fileID: 21300000, guid: 0232104231231a747931268bdb2e641e, type: 3}
+  title: DICE
+  description: roll twice on the next turn
+  price: 5
   itemType: 1

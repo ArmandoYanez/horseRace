@@ -1,33 +1,39 @@
 using UnityEngine;
 using TMPro;
+using UnityEngine.UI;
 
 public class ShopItemSlot : MonoBehaviour
 {
-    public Transform prefabAnchor;      // Donde se instancia el prefab
+    public Transform prefabAnchor;
     public TextMeshPro titleText;
-    public TextMeshPro priceText;
+    public TextMeshPro DescriptionText;
+    public TextMeshProUGUI priceText;
+    public Button buyButton;
 
-    private ShopItemSO currentItem;
+    private ShopItemSO item;
+    private ShopManager shopManager;
 
-    public void Setup(ShopItemSO item)
+    public void Setup(ShopItemSO newItem, ShopManager manager)
     {
-        currentItem = item;
+        item = newItem;
+        shopManager = manager;
 
-        // Limpia visual previo
         foreach (Transform c in prefabAnchor)
             Destroy(c.gameObject);
 
         if (item.prefab != null)
-        {
             Instantiate(item.prefab, prefabAnchor);
-        }
 
         titleText.text = item.title;
-        priceText.text = item.price.ToString();
+        DescriptionText.text = item.description;
+        priceText.text = "buy " + item.price.ToString()+"$";
+
+        buyButton.onClick.RemoveAllListeners();
+        buyButton.onClick.AddListener(TryBuy);
     }
 
-    public ShopItemSO GetItem()
+    void TryBuy()
     {
-        return currentItem;
+        shopManager.TryBuyItem(item);
     }
 }

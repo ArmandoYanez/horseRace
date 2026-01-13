@@ -9,9 +9,10 @@ public class EconomyManager : MonoBehaviour
     [Header("Money")]
     [SerializeField] private int money = 0;
 
+    public bool spend;
     public int Money => money;
 
-    public event Action<int> OnMoneyChanged;
+    public event Action<int,bool> OnMoneyChanged;
 
     void Awake()
     {
@@ -32,6 +33,7 @@ public class EconomyManager : MonoBehaviour
         if (amount <= 0) return;
 
         money += amount;
+        spend = false;
         Notify();
     }
 
@@ -43,6 +45,7 @@ public class EconomyManager : MonoBehaviour
             return false;
 
         money -= amount;
+        spend = true;
         Notify();
         return true;
     }
@@ -62,6 +65,6 @@ public class EconomyManager : MonoBehaviour
 
     void Notify()
     {
-        OnMoneyChanged?.Invoke(money);
+        OnMoneyChanged?.Invoke(money, spend);
     }
 }

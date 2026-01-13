@@ -6,11 +6,12 @@ public class MoneyUI : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI moneyText;
     public MMF_Player money;
+    public MMF_Player moneyred;
     private int curretMoney;
 
     void Start()
     {
-        UpdateText(EconomyManager.Instance.Money);
+        UpdateText(EconomyManager.Instance.Money, false);
         EconomyManager.Instance.OnMoneyChanged += UpdateText;
     }
 
@@ -20,9 +21,16 @@ public class MoneyUI : MonoBehaviour
             EconomyManager.Instance.OnMoneyChanged -= UpdateText;
     }
 
-    void UpdateText(int value)
+    void UpdateText(int value, bool form)
     {
-        money.PlayFeedbacks();
+        if(form == false) money.PlayFeedbacks();
+        else moneyred.PlayFeedbacks();
+        curretMoney = value;
+    }
+    
+    void UpdateTextBuy(int value, bool form)
+    {
+        moneyred.PlayFeedbacks();
         curretMoney = value;
     }
 
