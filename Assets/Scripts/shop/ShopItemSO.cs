@@ -22,5 +22,6 @@ public class ShopItemSO : ScriptableObject
     
     [Header("Type")]
     public ShopItemType itemType;
+    public ItemEffectSO effect;
 }
 
