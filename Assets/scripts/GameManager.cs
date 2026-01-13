@@ -157,7 +157,7 @@ public class GameManager : MonoBehaviour
             int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
             bool enemyAdvancedThisTurn = !isPlayer && baseGain > 0;
 
-// BONUS (SOLO JUGADOR)
+            // BONUS (SOLO JUGADOR)
             int bonusGain = 0;
 
             if (isPlayer)
@@ -171,7 +171,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-// OTAL REAL (SE SUMA SOLO UNA VEZ)
+            // OTAL REAL (SE SUMA SOLO UNA VEZ)
             int totalGain = baseGain + bonusGain;
             horses[i].currentPoints += totalGain;
 
@@ -201,10 +201,10 @@ public class GameManager : MonoBehaviour
             
             horseViews[i].UpdatePositionSmooth();
 
-// espera pequeña para que se vea el avance
+            // espera pequeña para que se vea el avance
             yield return new WaitForSeconds(0.35f);
 
-// APLICAR DEBUFF DESPUÉS DEL AVANCE (ENEMIGOS)
+            // APLICAR DEBUFF DESPUÉS DEL AVANCE (ENEMIGOS)
             if (enemyAdvancedThisTurn)
             {
                 int enemyPenalty = GetEnemyDebuffForCurrentRound();
@@ -246,7 +246,7 @@ public class GameManager : MonoBehaviour
                 }
             }
 
-// respiro antes del siguiente caballo
+            // respiro antes del siguiente caballo
             yield return new WaitForSeconds(0.25f);
             
         }
@@ -268,7 +268,7 @@ public class GameManager : MonoBehaviour
                     Debug.Log($"PLAYER WINS! Reward: {totalReward}");
 
                     // Aquí sumas el dinero al jugador
-                    // EconomyManager.Instance.AddMoney(totalReward);
+                    EconomyManager.Instance.AddMoney(10);
                 }
                 else
                 {

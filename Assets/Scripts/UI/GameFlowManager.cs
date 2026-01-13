@@ -7,6 +7,7 @@ public class GameFlowManager : MonoBehaviour
 
     public HUDController hud;
     public EventUI eventUI;
+    public ShopUI shopUI;
 
     // ---------------- FLOWS ----------------
 
@@ -66,17 +67,22 @@ public class GameFlowManager : MonoBehaviour
             }
         );
     }
-
-
-    public void StartShop()
-    {
-        // aquí luego va tu shop
-        gameManager.ConsumeRound();
-        hud.Show();
-    }
+    
     
     public void ReturnToMainMenu()
     {
         hud.Show();
     }
+    
+    public void StartShop()
+    {
+        hud.Hide();
+
+        shopUI.Show(() =>
+        {
+            gameManager.ConsumeRound();
+            hud.Show();
+        });
+    }
+
 }
