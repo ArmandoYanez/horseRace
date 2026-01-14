@@ -8,7 +8,8 @@ public class InventorySlot : MonoBehaviour
     public Button useButton;
     public MMF_Player feedback;
     private ShopItemSO item;
-
+    public GameManager gameManager;
+    
     void Awake()
     {
         Clear();
@@ -32,9 +33,11 @@ public class InventorySlot : MonoBehaviour
 
     void UseItem()
     {
+        if (item == null) return;
         Debug.Log($"Using item: {item.title}");
+        feedback?.PlayFeedbacks();
+        item.effect.Apply(gameManager);
 
-        // más adelante: aplicar efecto
         Clear();
     }
 

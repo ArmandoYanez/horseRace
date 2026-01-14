@@ -21,3 +21,4 @@ MonoBehaviour:
 '
   price: 3
   itemType: 1
+  effect: {fileID: 11400000, guid: b67c2372eb7fe464ca74bcb69d9779a8, type: 2}

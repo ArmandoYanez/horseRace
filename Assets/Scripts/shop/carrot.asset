@@ -18,3 +18,4 @@ MonoBehaviour:
   description: +2 guaranteed on any of your shots on the next roll
   price: 2
   itemType: 1
+  effect: {fileID: 11400000, guid: a975074c82107f149a8030c5ed042408, type: 2}

@@ -45,6 +45,15 @@ public class GameManager : MonoBehaviour
     [Header("Permanent Buffs")]
     public int permanentAllShotsBonus = 0;
     
+    [Header("Dice Effects")]
+    public int playerExtraRolls = 0;
+    
+    [Header("Temporary Turn Effects")]
+    public int leaderPenaltyNextTurn = 0;
+    
+    [Header("Item States")]
+    public int guaranteedBonusNextRoll = 0;
+
     #endregion
     
     public SoundLibrary uiSfx;
@@ -89,7 +98,10 @@ public class GameManager : MonoBehaviour
     {
         roundtxt.text = currentRound.ToString() + "/15";
     }
-
+    
+    [Header("Turn Modifiers")]
+    public bool BlockLeaderNextTurn = false;
+    
     void StartRace()
     {
         horses = new HorseRuntime[horseViews.Length];
@@ -124,6 +136,7 @@ public class GameManager : MonoBehaviour
     IEnumerator ResolveTurn(ShotType playerShot)
     {
         resolvingTurn = true;
+        bool usedExtraRoll = false;
 
         for (int i = 0; i < horses.Length; i++)
         {
@@ -133,6 +146,30 @@ public class GameManager : MonoBehaviour
                     : AIShotChooser.ChooseShot();
 
             bool isPlayer = (i == playerIndex);
+            
+            if (BlockLeaderNextTurn)
+            {
+                int leaderIndex = GetLeaderIndex();
+
+                if (i == leaderIndex)
+                {
+                    HorseResultSpawner spawneraBlock =
+                        horseViews[i].GetComponent<HorseResultSpawner>();
+
+                    if (spawneraBlock != null)
+                    {
+                        spawneraBlock.ShowCustomText("trap", Color.red);
+                    }
+
+                    AudioManager.Instance.Play(
+                        uiSfx,
+                        ConstantManager.Sfx.Race.Negative
+                    );
+
+                    yield return new WaitForSeconds(1f);
+                    continue; 
+                }
+            }
             
             // BLOQUEAR LOW SHOT SI HAY VENTAJA INICIAL
             if (isPlayer &&
@@ -155,8 +192,84 @@ public class GameManager : MonoBehaviour
 
             // BASE (resultado puro)
             int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
+            
+            // APLICAR ZANAHORIA (BONO GARANTIZADO)
+            if (isPlayer && guaranteedBonusNextRoll > 0)
+            {
+                baseGain += guaranteedBonusNextRoll;
+
+                HorseResultSpawner spawnerBonus =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                if (spawnerBonus != null)
+                {
+                    spawnerBonus.ShowBonusResult(guaranteedBonusNextRoll);
+                }
+
+                guaranteedBonusNextRoll = 0; // ⚠️ solo una vez
+                yield return new WaitForSeconds(0.35f);
+            }
+            
+            if (isPlayer && playerExtraRolls > 0)
+            {
+                usedExtraRoll = true;
+                
+                HorseResultSpawner spawnerExtra =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                // mostrar PRIMER resultado
+                if (spawnerExtra != null)
+                {
+                    spawnerExtra.ShowResult(baseGain);
+                    yield return new WaitForSeconds(0.5f);
+                }
+
+                // segunda tirada REAL
+                int secondGain = ShotResolver.ResolvePureLuck(shotToUse);
+                baseGain += secondGain;
+                playerExtraRolls--;
+
+                if (spawnerExtra != null)
+                {
+                    spawnerExtra.ShowResult(secondGain);
+                    yield return new WaitForSeconds(0.5f);
+                }
+            }
+            
+            
             bool enemyAdvancedThisTurn = !isPlayer && baseGain > 0;
 
+            // PENALIZAR AL LÍDER EN SU TURNO (CAMERA)
+            if (leaderPenaltyNextTurn > 0 && i == GetLeaderIndex())
+            {
+                horses[i].currentPoints =
+                    Mathf.Max(
+                        horses[i].baseData.startingPoints,
+                        horses[i].currentPoints - leaderPenaltyNextTurn
+                    );
+
+                HorseResultSpawner spawnerPenalty =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                if (spawnerPenalty != null)
+                {
+                    spawnerPenalty.ShowCustomText(
+                        "-" + leaderPenaltyNextTurn,
+                        Color.red
+                    );
+                }
+
+                AudioManager.Instance?.Play(
+                    uiSfx,
+                    ConstantManager.Sfx.Race.Negative
+                );
+
+                leaderPenaltyNextTurn = 0;
+
+                yield return new WaitForSeconds(0.35f);
+                horseViews[i].UpdatePositionSmooth();
+            }
+            
             // BONUS (SOLO JUGADOR)
             int bonusGain = 0;
 
@@ -184,10 +297,12 @@ public class GameManager : MonoBehaviour
             }
             if (spawner != null)
             {
-                spawner.ShowResult(baseGain);
+                if (!usedExtraRoll) 
+                {
+                    spawner.ShowResult(baseGain);
+                }
                 yield return new WaitForSeconds(0.8f);
-
-                // MOSTRAR BONUS SEPARADO (AZUL)
+                
                 if (isPlayer && bonusGain > 0)
                 {
                     spawner.ShowBonusResult(bonusGain);
@@ -279,7 +394,7 @@ public class GameManager : MonoBehaviour
                         permanentAllShotsBonus += 1;
                         lossRoundForPermanentAllShots = -1;
 
-                        Debug.Log("🔥 Permanent All-Shots +1 unlocked FOREVER");
+                        Debug.Log("Permanent All-Shots +1 unlocked FOREVER");
                     }
                     
                     CheckLossConditions();
@@ -289,6 +404,7 @@ public class GameManager : MonoBehaviour
 
                 yield return new WaitForSeconds(1f);
                 CleanupRoundEffects();
+                BlockLeaderNextTurn = false;
                 ResetRace();
                 yield break;
             }
@@ -445,6 +561,8 @@ public class GameManager : MonoBehaviour
             $"📜 Loss condition set: lose round {triggerRound}, gain +{bonusAmount} at round {triggerRound + roundsAhead}"
         );
     }
+    
+    
     #endregion
 
     #region Get Events
@@ -463,7 +581,6 @@ public class GameManager : MonoBehaviour
 
         return totalBonus;
     }
-    
     int GetAllShotsBonusForCurrentRound()
     {
         int totalBonus = 0;
@@ -521,6 +638,22 @@ public class GameManager : MonoBehaviour
         }
 
         return bonus;
+    }
+    int GetLeaderIndex()
+    {
+        int leader = 0;
+        int maxPoints = horses[0].currentPoints;
+
+        for (int i = 1; i < horses.Length; i++)
+        {
+            if (horses[i].currentPoints > maxPoints)
+            {
+                maxPoints = horses[i].currentPoints;
+                leader = i;
+            }
+        }
+
+        return leader;
     }
 
     #endregion

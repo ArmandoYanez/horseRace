@@ -3669,6 +3669,7 @@ MonoBehaviour:
   iconImage: {fileID: 80824527}
   useButton: {fileID: 80824526}
   feedback: {fileID: 80824525}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &81569967
 GameObject:
   m_ObjectHideFlags: 0
@@ -4517,7 +4518,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 111576887}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 111576884}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &111576887
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5045,6 +5058,7 @@ MonoBehaviour:
   iconImage: {fileID: 111576887}
   useButton: {fileID: 111576886}
   feedback: {fileID: 111576890}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &112441852
 GameObject:
   m_ObjectHideFlags: 0
@@ -5608,6 +5622,7 @@ MonoBehaviour:
   iconImage: {fileID: 143504039}
   useButton: {fileID: 143504038}
   feedback: {fileID: 143504037}
+  gameManager: {fileID: 0}
 --- !u!114 &143504036
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6125,7 +6140,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 143504033}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -8780,6 +8795,7 @@ MonoBehaviour:
   iconImage: {fileID: 151438201}
   useButton: {fileID: 151438200}
   feedback: {fileID: 151438199}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &159829642
 GameObject:
   m_ObjectHideFlags: 0
@@ -8944,6 +8960,7 @@ MonoBehaviour:
   iconImage: {fileID: 161275871}
   useButton: {fileID: 161275870}
   feedback: {fileID: 161275869}
+  gameManager: {fileID: 0}
 --- !u!114 &161275868
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9461,7 +9478,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 161275865}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -17502,6 +17519,7 @@ MonoBehaviour:
   iconImage: {fileID: 329271442}
   useButton: {fileID: 329271441}
   feedback: {fileID: 329271440}
+  gameManager: {fileID: 0}
 --- !u!114 &329271439
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -18019,7 +18037,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 329271436}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -20192,6 +20210,7 @@ MonoBehaviour:
   iconImage: {fileID: 332989383}
   useButton: {fileID: 332989382}
   feedback: {fileID: 332989381}
+  gameManager: {fileID: 0}
 --- !u!114 &332989380
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -20700,7 +20719,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 332989377}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -37745,6 +37764,7 @@ MonoBehaviour:
   iconImage: {fileID: 713988683}
   useButton: {fileID: 713988682}
   feedback: {fileID: 713988681}
+  gameManager: {fileID: 0}
 --- !u!114 &713988680
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -38253,7 +38273,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 713988677}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -40667,6 +40687,7 @@ MonoBehaviour:
   iconImage: {fileID: 787193924}
   useButton: {fileID: 787193923}
   feedback: {fileID: 787193922}
+  gameManager: {fileID: 0}
 --- !u!114 &787193921
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -41184,7 +41205,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 787193918}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -46383,6 +46404,7 @@ MonoBehaviour:
   iconImage: {fileID: 902083807}
   useButton: {fileID: 902083806}
   feedback: {fileID: 902083805}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &903140594
 GameObject:
   m_ObjectHideFlags: 0
@@ -48070,6 +48092,7 @@ MonoBehaviour:
   iconImage: {fileID: 970101592}
   useButton: {fileID: 970101591}
   feedback: {fileID: 970101590}
+  gameManager: {fileID: 0}
 --- !u!114 &970101589
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -48587,7 +48610,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 970101586}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -52005,6 +52028,7 @@ MonoBehaviour:
   iconImage: {fileID: 1097252915}
   useButton: {fileID: 1097252914}
   feedback: {fileID: 1097252913}
+  gameManager: {fileID: 0}
 --- !u!114 &1097252912
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -52522,7 +52546,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1097252909}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -57176,6 +57200,7 @@ MonoBehaviour:
   iconImage: {fileID: 1196951685}
   useButton: {fileID: 1196951684}
   feedback: {fileID: 1196951683}
+  gameManager: {fileID: 0}
 --- !u!114 &1196951682
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -57693,7 +57718,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1196951679}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -58608,6 +58633,7 @@ MonoBehaviour:
   iconImage: {fileID: 1216952797}
   useButton: {fileID: 1216952796}
   feedback: {fileID: 1216952795}
+  gameManager: {fileID: 0}
 --- !u!114 &1216952794
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -59125,7 +59151,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1216952791}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -64877,6 +64903,7 @@ MonoBehaviour:
   iconImage: {fileID: 1343423659}
   useButton: {fileID: 1343423658}
   feedback: {fileID: 1343423657}
+  gameManager: {fileID: 0}
 --- !u!114 &1343423656
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -65394,7 +65421,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1343423653}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -66317,6 +66344,7 @@ MonoBehaviour:
   iconImage: {fileID: 1386144320}
   useButton: {fileID: 1386144319}
   feedback: {fileID: 1386144318}
+  gameManager: {fileID: 0}
 --- !u!114 &1386144317
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -66834,7 +66862,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1386144314}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -67938,6 +67966,7 @@ MonoBehaviour:
   iconImage: {fileID: 1404592700}
   useButton: {fileID: 1404592699}
   feedback: {fileID: 1404592698}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &1413189116
 GameObject:
   m_ObjectHideFlags: 0
@@ -71458,6 +71487,7 @@ MonoBehaviour:
   iconImage: {fileID: 1434584044}
   useButton: {fileID: 1434584043}
   feedback: {fileID: 1434584042}
+  gameManager: {fileID: 0}
 --- !u!114 &1434584041
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -71975,7 +72005,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1434584038}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
@@ -90697,8 +90727,10 @@ MonoBehaviour:
   - {fileID: 103646288}
   turnUI: {fileID: 775677519}
   permanentAllShotsBonus: 0
+  playerExtraRolls: 0
   uiSfx: {fileID: 11400000, guid: fa231e57126f1a34e830081f16068349, type: 2}
   flowManager: {fileID: 25518832}
+  BlockLeaderNextTurn: 0
 --- !u!4 &2034045132
 Transform:
   m_ObjectHideFlags: 0
@@ -93386,6 +93418,7 @@ MonoBehaviour:
   iconImage: {fileID: 2147198618}
   useButton: {fileID: 2147198617}
   feedback: {fileID: 2147198616}
+  gameManager: {fileID: 0}
 --- !u!114 &2147198615
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -93903,7 +93936,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2147198612}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 

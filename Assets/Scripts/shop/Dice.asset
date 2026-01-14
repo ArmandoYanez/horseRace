@@ -18,3 +18,4 @@ MonoBehaviour:
   description: roll twice on the next turn
   price: 5
   itemType: 1
+  effect: {fileID: 11400000, guid: a17818e57f6ad794e8da16d1ea0532ff, type: 2}
