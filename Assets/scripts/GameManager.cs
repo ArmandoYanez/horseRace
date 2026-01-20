@@ -54,6 +54,9 @@ public class GameManager : MonoBehaviour
     [Header("Item States")]
     public int guaranteedBonusNextRoll = 0;
 
+    [Header("Item States")]
+    public int enemiesBlockedThisTurn = 0;
+    
     #endregion
     
     public SoundLibrary uiSfx;
@@ -65,7 +68,16 @@ public class GameManager : MonoBehaviour
     private int lossRoundForPermanentAllShots = -1;
     private int startingAdvantageThisRace = 0;
     private bool lowDisabledThisRace = false;
+    
+    [Header("Item: Swap (Mid hinders enemies)")]
+    public bool swapMidActive = false;
+    public int swapMidAmount = 2;
 
+    [Header("Shot Modifiers")]
+    public int midShotModifier = 0;
+    public int highShotModifier = 0;
+    public int lowShotModifier = 0;
+    
     public void InitRaceData()
     {
         StartRace();
@@ -102,6 +114,9 @@ public class GameManager : MonoBehaviour
     [Header("Turn Modifiers")]
     public bool BlockLeaderNextTurn = false;
     
+    [Header("Next Race Modifiers")]
+    public int startingBonusNextRace = 0;
+    
     void StartRace()
     {
         horses = new HorseRuntime[horseViews.Length];
@@ -135,6 +150,8 @@ public class GameManager : MonoBehaviour
     
     IEnumerator ResolveTurn(ShotType playerShot)
     {
+        int carrotBonus = 0;
+        
         resolvingTurn = true;
         bool usedExtraRoll = false;
 
@@ -146,6 +163,29 @@ public class GameManager : MonoBehaviour
                     : AIShotChooser.ChooseShot();
 
             bool isPlayer = (i == playerIndex);
+            
+            // BLOQUEAR ENEMIGOS POR PEPPER SPRAY
+            if (!isPlayer && enemiesBlockedThisTurn > 0)
+            {
+                enemiesBlockedThisTurn--;
+
+                HorseResultSpawner spawnerBlocked =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                if (spawnerBlocked != null)
+                {
+                    spawnerBlocked.ShowCustomText("NOPE", Color.red);
+                }
+
+                AudioManager.Instance?.Play(
+                    uiSfx,
+                    ConstantManager.Sfx.Race.Negative
+                );
+
+                yield return new WaitForSeconds(1f);
+                continue;
+            }
+
             
             if (BlockLeaderNextTurn)
             {
@@ -193,6 +233,57 @@ public class GameManager : MonoBehaviour
             // BASE (resultado puro)
             int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
             
+            if (isPlayer && swapMidActive && shotToUse == ShotType.Medium && baseGain > 0)
+            {
+                int hinderAmount = Mathf.Max(0, midShotModifier);
+                
+                baseGain = 0;
+
+                HorseResultSpawner spPlayer =
+                    horseViews[i].GetComponent<HorseResultSpawner>();
+
+                if (spPlayer != null && hinderAmount > 0)
+                {
+                    spPlayer.ShowCustomText(
+                        "-" + hinderAmount,
+                        Color.white
+                    );
+                }
+
+                yield return new WaitForSeconds(0.3f);
+                
+                for (int e = 0; e < horses.Length; e++)
+                {
+                    if (e == playerIndex) continue;
+
+                    int maxBack =
+                        horses[e].currentPoints - horses[e].baseData.startingPoints;
+
+                    int back =
+                        Mathf.Clamp(hinderAmount, 0, maxBack);
+
+                    if (back <= 0) continue;
+
+                    horses[e].currentPoints -= back;
+
+                    HorseResultSpawner spEnemy =
+                        horseViews[e].GetComponent<HorseResultSpawner>();
+
+                    if (spEnemy != null)
+                    {
+                        spEnemy.ShowCustomText(
+                            "-" + back,
+                            Color.red
+                        );
+                    }
+
+                    horseViews[e].UpdatePositionSmooth();
+                }
+
+                yield return new WaitForSeconds(0.4f);
+            }
+
+            
             // APLICAR ZANAHORIA (BONO GARANTIZADO)
             if (isPlayer && guaranteedBonusNextRoll > 0)
             {
@@ -206,8 +297,8 @@ public class GameManager : MonoBehaviour
                     spawnerBonus.ShowBonusResult(guaranteedBonusNextRoll);
                 }
 
-                guaranteedBonusNextRoll = 0; // ⚠️ solo una vez
-                yield return new WaitForSeconds(0.35f);
+                guaranteedBonusNextRoll = 0; 
+                yield return new WaitForSeconds(0.8f);
             }
             
             if (isPlayer && playerExtraRolls > 0)
@@ -221,7 +312,7 @@ public class GameManager : MonoBehaviour
                 if (spawnerExtra != null)
                 {
                     spawnerExtra.ShowResult(baseGain);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.8f);
                 }
 
                 // segunda tirada REAL
@@ -232,7 +323,7 @@ public class GameManager : MonoBehaviour
                 if (spawnerExtra != null)
                 {
                     spawnerExtra.ShowResult(secondGain);
-                    yield return new WaitForSeconds(0.5f);
+                    yield return new WaitForSeconds(0.8f);
                 }
             }
             
@@ -443,8 +534,17 @@ public class GameManager : MonoBehaviour
     }
     void ApplyStartingBonuses()
     {
+        // bonus de eventos programados
         int bonus = GetStartingPointsBonusForCurrentRound();
 
+        // 🥤 SODA: bonus de inicio de carrera
+        if (startingBonusNextRace > 0)
+        {
+            bonus += startingBonusNextRace;
+            startingBonusNextRace = 0; // ⚠️ se consume aquí
+        }
+
+        // si el bonus total es grande, bloquear LOW
         if (bonus >= 5)
         {
             lowDisabledThisRace = true;
@@ -671,5 +771,10 @@ public class GameManager : MonoBehaviour
     {
         yield return new WaitForSeconds(delay);
         horseViews[index].UpdatePositionSmooth();
+    }
+    
+    public void BlockAllEnemiesNextTurn()
+    {
+        enemiesBlockedThisTurn = horseViews.Length - 1;
     }
 }

@@ -8,33 +8,35 @@ public class ShopManager : MonoBehaviour
     public int maxItems = 5;
     public InventoryUI inventoryUI;
     public MMF_Player feedback;
+    public GameManager gameManager;
     public void TryBuyItem(ShopItemSO item)
     {
         // 1. Verificar dinero
         if (!EconomyManager.Instance.CanAfford(item.price))
         {
-            Debug.Log("Not enough money");
+            Debug.Log("❌ Not enough money");
             return;
         }
 
-        // 2. Intentar pagar
-        bool paid = EconomyManager.Instance.SpendMoney(item.price);
-        if (!paid)
+        // 2. Pagar
+        if (!EconomyManager.Instance.SpendMoney(item.price))
         {
-            Debug.Log("Payment failed");
+            Debug.Log("❌ Payment failed");
             return;
         }
 
-        // 3. Decidir qué hacer con el objeto
+        // 3. ¿Instantáneo o consumible?
         if (item.itemType == ShopItemType.Instant)
         {
             Debug.Log($"⚡ Instant item applied: {item.title}");
-            // item.effect.Apply(); ← luego
+
+            item.effect.Apply(gameManager);
+
+            return; 
         }
-        else
-        {
-            AddToInventory(item);
-        }
+
+        // 4. Consumible → inventario
+        AddToInventory(item);
     }
 
     void AddToInventory(ShopItemSO item)

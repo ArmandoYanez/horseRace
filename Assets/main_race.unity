@@ -957,6 +957,7 @@ MonoBehaviour:
   maxItems: 5
   inventoryUI: {fileID: 550825497}
   feedback: {fileID: 592188246}
+  gameManager: {fileID: 2034045131}
 --- !u!1 &26118900
 GameObject:
   m_ObjectHideFlags: 0
@@ -90728,9 +90729,13 @@ MonoBehaviour:
   turnUI: {fileID: 775677519}
   permanentAllShotsBonus: 0
   playerExtraRolls: 0
+  leaderPenaltyNextTurn: 0
+  guaranteedBonusNextRoll: 0
+  enemiesBlockedThisTurn: 0
   uiSfx: {fileID: 11400000, guid: fa231e57126f1a34e830081f16068349, type: 2}
   flowManager: {fileID: 25518832}
   BlockLeaderNextTurn: 0
+  startingBonusNextRace: 0
 --- !u!4 &2034045132
 Transform:
   m_ObjectHideFlags: 0
