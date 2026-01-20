@@ -16,5 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300006, guid: 358b5d9f23bc9413e87c9948acc67ee1, type: 3}
   title: HIGH +1
   description: Your high shots give an extra +1
-  price: 5
+  price: 10
   itemType: 0
+  effect: {fileID: 11400000, guid: 3b695d919b9cbdb46bd8f99a3c94a6f7, type: 2}

@@ -40388,6 +40388,7 @@ GameObject:
   - component: {fileID: 775677520}
   - component: {fileID: 775677519}
   - component: {fileID: 775677518}
+  - component: {fileID: 775677522}
   m_Layer: 5
   m_Name: TurnUIPanel
   m_TagString: Untagged
@@ -40489,6 +40490,22 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 775677515}
   m_CullTransparentMesh: 1
+--- !u!114 &775677522
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 775677515}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f962c107dce6dcf40a519f525e6c5dd2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  high: {fileID: 603505310}
+  mid: {fileID: 1163812640}
+  low: {fileID: 1744318363}
+  gamemanager: {fileID: 2034045131}
 --- !u!1 &777299104
 GameObject:
   m_ObjectHideFlags: 0
@@ -90734,6 +90751,12 @@ MonoBehaviour:
   enemiesBlockedThisTurn: 0
   uiSfx: {fileID: 11400000, guid: fa231e57126f1a34e830081f16068349, type: 2}
   flowManager: {fileID: 25518832}
+  swapMidActive: 0
+  swapMidAmount: 2
+  midShotModifier: 0
+  highShotModifier: 0
+  lowShotModifier: 0
+  updateIndicators: {fileID: 775677522}
   BlockLeaderNextTurn: 0
   startingBonusNextRace: 0
 --- !u!4 &2034045132

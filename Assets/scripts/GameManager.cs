@@ -77,6 +77,9 @@ public class GameManager : MonoBehaviour
     public int midShotModifier = 0;
     public int highShotModifier = 0;
     public int lowShotModifier = 0;
+
+    [Header("UI Text")] 
+    public indicatorsUpdate updateIndicators;
     
     public void InitRaceData()
     {
@@ -119,6 +122,8 @@ public class GameManager : MonoBehaviour
     
     void StartRace()
     {
+        
+            
         horses = new HorseRuntime[horseViews.Length];
 
         for (int i = 0; i < horseViews.Length; i++)
@@ -140,6 +145,51 @@ public class GameManager : MonoBehaviour
         StartNewRound();
     }
     
+    int ApplyPlayerShotModifiers(
+        ShotType shot,
+        int rollGain,
+        out bool swapConsumed
+    )
+    {
+        swapConsumed = false;
+
+        if (rollGain <= 0)
+            return rollGain;
+
+        int result = rollGain;
+
+        // 1. Modificadores permanentes
+        switch (shot)
+        {
+            case ShotType.High:
+                result += highShotModifier;
+                break;
+            case ShotType.Medium:
+                result += midShotModifier;
+                break;
+            case ShotType.Low:
+                result += lowShotModifier;
+                break;
+        }
+
+        // 2. Swap Mid (PRIORIDAD)
+        if (swapMidActive && shot == ShotType.Medium)
+        {
+            swapConsumed = true;
+            return 0; // el jugador NO avanza
+        }
+
+        // 3. Zanahoria (bonus garantizado)
+        if (guaranteedBonusNextRoll > 0)
+        {
+            result += guaranteedBonusNextRoll;
+            guaranteedBonusNextRoll = 0;
+        }
+
+        return result;
+    }
+
+    
     public void PlayerChooseShot(ShotType shot)
     {
         if (resolvingTurn) return;
@@ -147,7 +197,179 @@ public class GameManager : MonoBehaviour
         turnUI.Hide();
         StartCoroutine(ResolveTurn(shot));
     }
+    IEnumerator ResolveTurn(ShotType playerShot)
+{
+    resolvingTurn = true;
+    bool usedExtraRoll = false;
+
+    for (int i = 0; i < horses.Length; i++)
+    {
+        ShotType shotToUse =
+            (i == playerIndex) ? playerShot : AIShotChooser.ChooseShot();
+
+        bool isPlayer = (i == playerIndex);
+
+        // ================= PEPPER SPRAY =================
+        if (!isPlayer && enemiesBlockedThisTurn > 0)
+        {
+            enemiesBlockedThisTurn--;
+
+            HorseResultSpawner sp =
+                horseViews[i].GetComponent<HorseResultSpawner>();
+
+            sp?.ShowCustomText("NOPE", Color.red);
+            AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
+
+            yield return new WaitForSeconds(1f);
+            continue;
+        }
+
+        // ================= RAT TRAP =================
+        if (BlockLeaderNextTurn && i == GetLeaderIndex())
+        {
+            HorseResultSpawner sp =
+                horseViews[i].GetComponent<HorseResultSpawner>();
+
+            sp?.ShowCustomText("TRAP", Color.red);
+            AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
+
+            yield return new WaitForSeconds(1f);
+            continue;
+        }
+
+        // ================= LOW BLOQUEADO =================
+        if (isPlayer && shotToUse == ShotType.Low && lowDisabledThisRace)
+        {
+            HorseResultSpawner sp =
+                horseViews[i].GetComponent<HorseResultSpawner>();
+
+            sp?.ShowCustomText("NOPE", Color.red);
+            AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
+
+            yield return new WaitForSeconds(1f);
+            continue;
+        }
+
+        // ================= TIRADA BASE =================
+        int rollGain = ShotResolver.ResolvePureLuck(shotToUse);
+
+        bool swapConsumed = false;
+        int baseGain = rollGain;
+
+        if (isPlayer)
+        {
+            baseGain = ApplyPlayerShotModifiers(
+                shotToUse,
+                rollGain,
+                out swapConsumed
+            );
+        }
+
+        // ================= SWAP MID =================
+        if (swapConsumed)
+        {
+            int hinder = rollGain + midShotModifier;
+
+            HorseResultSpawner spPlayer =
+                horseViews[playerIndex].GetComponent<HorseResultSpawner>();
+
+            spPlayer?.ShowCustomText("-" + hinder, Color.white);
+            AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
+
+            yield return new WaitForSeconds(0.8f);
+
+            for (int e = 0; e < horses.Length; e++)
+            {
+                if (e == playerIndex) continue;
+
+                int maxBack =
+                    horses[e].currentPoints - horses[e].baseData.startingPoints;
+
+                int applied = Mathf.Clamp(hinder, 0, maxBack);
+                if (applied <= 0) continue;
+
+                horses[e].currentPoints -= applied;
+
+                HorseResultSpawner spE =
+                    horseViews[e].GetComponent<HorseResultSpawner>();
+
+                spE?.ShowCustomText("-" + applied, Color.red);
+                AudioManager.Instance?.Play(
+                    uiSfx,
+                    ConstantManager.Sfx.Race.Negative
+                );
+
+                yield return new WaitForSeconds(0.25f);
+                horseViews[e].UpdatePositionSmooth();
+            }
+
+            yield return new WaitForSeconds(0.25f);
+        }
+
+        // ================= EXTRA ROLL =================
+        if (isPlayer && playerExtraRolls > 0)
+        {
+            usedExtraRoll = true;
+
+            HorseResultSpawner sp =
+                horseViews[i].GetComponent<HorseResultSpawner>();
+
+            sp?.ShowResult(baseGain);
+            yield return new WaitForSeconds(0.8f);
+
+            int second = ShotResolver.ResolvePureLuck(shotToUse);
+            baseGain += second;
+            playerExtraRolls--;
+
+            sp?.ShowResult(second);
+            yield return new WaitForSeconds(0.8f);
+        }
+
+        // ================= BONUS =================
+        int bonusGain = 0;
+        if (isPlayer)
+        {
+            bonusGain += permanentAllShotsBonus;
+            bonusGain += GetAllShotsBonusForCurrentRound();
+            if (shotToUse == ShotType.Low)
+                bonusGain += GetLowRiskBonusForCurrentRound();
+        }
+
+        int totalGain = baseGain + bonusGain;
+        horses[i].currentPoints += totalGain;
+
+        // ================= UI RESULT =================
+        HorseResultSpawner spawner =
+            horseViews[i].GetComponent<HorseResultSpawner>();
+
+        AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
+
+        if (!usedExtraRoll && !swapConsumed)
+        {
+            spawner?.ShowResult(baseGain);
+            yield return new WaitForSeconds(0.8f);
+        }
+
+        if (isPlayer && bonusGain > 0)
+        {
+            spawner?.ShowBonusResult(bonusGain);
+            AudioManager.Instance?.Play(
+                uiSfx,
+                ConstantManager.Sfx.Race.BonusPoints
+            );
+            yield return new WaitForSeconds(0.4f);
+        }
+
+        yield return new WaitForSeconds(0.5f);
+        horseViews[i].UpdatePositionSmooth();
+        yield return new WaitForSeconds(0.25f);
+    }
+
+    resolvingTurn = false;
+    StartNewRound();
+}
     
+    /*
     IEnumerator ResolveTurn(ShotType playerShot)
     {
         int carrotBonus = 0;
@@ -231,58 +453,68 @@ public class GameManager : MonoBehaviour
             }
 
             // BASE (resultado puro)
-            int baseGain = ShotResolver.ResolvePureLuck(shotToUse);
+            int rollGain = ShotResolver.ResolvePureLuck(shotToUse);
+            int baseGain = rollGain;
             
-            if (isPlayer && swapMidActive && shotToUse == ShotType.Medium && baseGain > 0)
+            // APLICAR BONUS PERMANENTE POR TIPO DE TIRO (SOLO JUGADOR)
+            if (isPlayer && rollGain > 0)
             {
-                int hinderAmount = Mathf.Max(0, midShotModifier);
-                
+                switch (shotToUse)
+                {
+                    case ShotType.High:
+                        baseGain += highShotModifier;
+                        break;
+
+                    case ShotType.Medium:
+                        baseGain += midShotModifier;
+                        break;
+
+                    case ShotType.Low:
+                        baseGain += lowShotModifier;
+                        break;
+                }
+            }
+            
+            if (isPlayer && swapMidActive && shotToUse == ShotType.Medium && rollGain > 0)
+            {
+                int hinder = rollGain + midShotModifier; 
+
+                // 1) tú no avanzas
                 baseGain = 0;
 
-                HorseResultSpawner spPlayer =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
+                // 2) muestra "-X" en BLANCO (no FAIL)
+                HorseResultSpawner spPlayer = horseViews[i].GetComponent<HorseResultSpawner>();
+                if (spPlayer != null)
+                    spPlayer.ShowCustomText("-" + hinder, Color.white);
 
-                if (spPlayer != null && hinderAmount > 0)
-                {
-                    spPlayer.ShowCustomText(
-                        "-" + hinderAmount,
-                        Color.white
-                    );
-                }
+                AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
+                yield return new WaitForSeconds(0.8f);
 
-                yield return new WaitForSeconds(0.3f);
-                
+                // 3) aplica retroceso a TODOS los enemigos inmediatamente
                 for (int e = 0; e < horses.Length; e++)
                 {
                     if (e == playerIndex) continue;
 
-                    int maxBack =
-                        horses[e].currentPoints - horses[e].baseData.startingPoints;
+                    int maxBack = horses[e].currentPoints - horses[e].baseData.startingPoints;
+                    int applied = Mathf.Clamp(hinder, 0, maxBack);
+                    if (applied <= 0) continue;
 
-                    int back =
-                        Mathf.Clamp(hinderAmount, 0, maxBack);
+                    horses[e].currentPoints -= applied;
 
-                    if (back <= 0) continue;
+                    HorseResultSpawner spE = horseViews[e].GetComponent<HorseResultSpawner>();
+                    if (spE != null)
+                        spE.ShowCustomText("-" + applied, Color.red);
 
-                    horses[e].currentPoints -= back;
+                    AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
 
-                    HorseResultSpawner spEnemy =
-                        horseViews[e].GetComponent<HorseResultSpawner>();
-
-                    if (spEnemy != null)
-                    {
-                        spEnemy.ShowCustomText(
-                            "-" + back,
-                            Color.red
-                        );
-                    }
-
+                    // para que se note el retroceso
+                    yield return new WaitForSeconds(0.25f);
                     horseViews[e].UpdatePositionSmooth();
                 }
 
-                yield return new WaitForSeconds(0.4f);
+                // un respiro y seguimos con el turno del jugador normal (pero sin avance)
+                yield return new WaitForSeconds(0.25f);
             }
-
             
             // APLICAR ZANAHORIA (BONO GARANTIZADO)
             if (isPlayer && guaranteedBonusNextRoll > 0)
@@ -386,9 +618,12 @@ public class GameManager : MonoBehaviour
             {
                 AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
             }
+            
+            bool swapMidSuccess = (isPlayer && swapMidActive && shotToUse == ShotType.Medium && rollGain > 0);
+            
             if (spawner != null)
             {
-                if (!usedExtraRoll) 
+                if (!usedExtraRoll && !swapMidSuccess) 
                 {
                     spawner.ShowResult(baseGain);
                 }
@@ -474,7 +709,8 @@ public class GameManager : MonoBehaviour
                     Debug.Log($"PLAYER WINS! Reward: {totalReward}");
 
                     // Aquí sumas el dinero al jugador
-                    EconomyManager.Instance.AddMoney(10);
+                    int reward = GetMoneyRewardForRound(currentRound);
+                    EconomyManager.Instance.AddMoney(reward);
                 }
                 else
                 {
@@ -503,9 +739,10 @@ public class GameManager : MonoBehaviour
 
         resolvingTurn = false;
         //currentRound++;
+        
         StartNewRound();
     }
-    
+    */
     void ResetRace()
     {
         resolvingTurn = false;
@@ -527,7 +764,7 @@ public class GameManager : MonoBehaviour
     void StartNewRound()
     {
         Debug.Log($"Starting Round {currentRound}");
-
+        updateIndicators.UpdateText();
         ApplyStartingBonuses();
 
         turnUI.Show();
@@ -776,5 +1013,25 @@ public class GameManager : MonoBehaviour
     public void BlockAllEnemiesNextTurn()
     {
         enemiesBlockedThisTurn = horseViews.Length - 1;
+    }
+    
+    int GetMoneyRewardForRound(int round)
+    {
+        // Normalizamos la ronda (0 → 1)
+        float t = Mathf.Clamp01(round / 15f);
+
+        // Curva suave de progresión
+        float curve = Mathf.Pow(t, 1.5f);
+
+        int baseReward = 5;
+        int scaledReward = Mathf.RoundToInt(curve * 25);
+
+        int reward = baseReward + scaledReward;
+
+        // Spike cada 5 rondas
+        if (round % 5 == 0)
+            reward += 5;
+
+        return reward;
     }
 }
