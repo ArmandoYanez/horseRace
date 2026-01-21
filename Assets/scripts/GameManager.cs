@@ -84,6 +84,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private int cameraPenaltyNextTurn = 0;
     [SerializeField] private int cameraPenaltyAmount = 2;
     
+    [Header("Boss Behavior")]
+    [Range(0f, 1f)]
+    public float bossPunishChance = 0.35f; // 35% por defecto
+    
     bool cameraPending = false;
     
     // cosas para el boss
@@ -424,16 +428,22 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         // ================= BOSS PUNISH PLAYER =================
-        if (isBoss && horses[playerIndex].currentPoints >
-            horses[playerIndex].baseData.startingPoints)
+        if (
+            isBoss &&
+            horses[playerIndex].currentPoints >
+            horses[playerIndex].baseData.startingPoints &&
+            UnityEngine.Random.value < bossPunishChance
+        )
         {
+            int punish = 2;
+
             horses[playerIndex].currentPoints = Mathf.Max(
                 horses[playerIndex].baseData.startingPoints,
-                horses[playerIndex].currentPoints - 2
+                horses[playerIndex].currentPoints - punish
             );
 
             horseViews[playerIndex].GetComponent<HorseResultSpawner>()
-                ?.ShowCustomText("-2", Color.red);
+                ?.ShowCustomText("-" + punish, Color.red);
 
             AudioManager.Instance?.Play(
                 uiSfx, ConstantManager.Sfx.Race.Negative
@@ -1181,9 +1191,9 @@ public class GameManager : MonoBehaviour
     {
         switch (shot)
         {
-            case ShotType.High:   return UnityEngine.Random.Range(3, 6); // 5–7
-            case ShotType.Medium: return UnityEngine.Random.Range(2, 4); // 3–4
-            case ShotType.Low:    return UnityEngine.Random.Range(1, 3); // 1–2
+            case ShotType.High:   return UnityEngine.Random.Range(3, 6); 
+            case ShotType.Medium: return UnityEngine.Random.Range(2, 4); 
+            case ShotType.Low:    return UnityEngine.Random.Range(1, 3);
             default: return 0;
         }
     }
