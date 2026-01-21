@@ -16,6 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 90580adf76ddbf541bdbd4b522d247f9, type: 3}
   title: PEPPER SPRAY
   description: THE NEXT TURN, THE OTHER COMPETITORS WILL NOT BE ABLE TO ROLL
-  price: 3
+  price: 7
   itemType: 1
   effect: {fileID: 11400000, guid: 1e725f0cfc7f0704dbded41a0a38d9f5, type: 2}

@@ -16,6 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300006, guid: 358b5d9f23bc9413e87c9948acc67ee1, type: 3}
   title: SWAP
   description: Your mid shots will hinder others instead of helping you advance
-  price: 7
+  price: 15
   itemType: 0
   effect: {fileID: 11400000, guid: 522dacc053f580f4887114f4b435b123, type: 2}

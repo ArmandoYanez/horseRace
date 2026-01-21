@@ -30542,7 +30542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e02dd96c0eada3242875eaa3c202614d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  money: 100
+  money: 15
   spend: 0
 --- !u!4 &550825496
 Transform:
@@ -79356,7 +79356,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: '1 / 15
+  m_text: '1 / 20
 
 
 '
@@ -86740,7 +86740,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 959c06a507377af43afe9d9930ccf23e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  horseData: {fileID: 11400000, guid: 59854b8c0a85ad442b81f6db4d90a696, type: 2}
+  horseData: {fileID: 11400000, guid: e11b8ac3bbce0ec4bbbb017fd87476fd, type: 2}
   startX: 246.38
   finishX: 311.3
   moveDuration: 0.35
@@ -90757,6 +90757,10 @@ MonoBehaviour:
   highShotModifier: 0
   lowShotModifier: 0
   updateIndicators: {fileID: 775677522}
+  cameraPenaltyNextTurn: 0
+  cameraPenaltyAmount: 2
+  isBossRace: 0
+  bossRound: 20
   BlockLeaderNextTurn: 0
   startingBonusNextRace: 0
 --- !u!4 &2034045132
@@ -95314,7 +95318,7 @@ MonoBehaviour:
   prefabAnchor: {fileID: 1979309750}
   titleText: {fileID: 211571708}
   DescriptionText: {fileID: 1477112670}
-  priceText: {fileID: 1624962141}
+  priceText: {fileID: 1032132837}
   buyButton: {fileID: 1032132839}
 --- !u!23 &5563957771019981728
 MeshRenderer:
@@ -96181,7 +96185,7 @@ MonoBehaviour:
   prefabAnchor: {fileID: 96986932}
   titleText: {fileID: 1088541183}
   DescriptionText: {fileID: 814516704}
-  priceText: {fileID: 1032132837}
+  priceText: {fileID: 1624962141}
   buyButton: {fileID: 1624962143}
 --- !u!33 &7701313738012063302
 MeshFilter:

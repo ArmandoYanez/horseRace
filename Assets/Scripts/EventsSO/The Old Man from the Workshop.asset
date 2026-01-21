@@ -20,5 +20,5 @@ MonoBehaviour:
     aprov\xE9chalo al m\xE1ximo y c\xED\xF1ete a tiros seguros."
   eventType: 2
   minRound: 1
-  maxRound: 14
+  maxRound: 17
   effect: {fileID: 11400000, guid: 8f6435b33a9b83341bf7e87046faf98c, type: 2}

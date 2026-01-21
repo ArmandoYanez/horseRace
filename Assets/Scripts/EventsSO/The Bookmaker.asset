@@ -19,5 +19,5 @@ MonoBehaviour:
     la siguiente."
   eventType: 2
   minRound: 1
-  maxRound: 7
+  maxRound: 15
   effect: {fileID: 11400000, guid: 986612376f09b1c4295e94c2367ea6fd, type: 2}

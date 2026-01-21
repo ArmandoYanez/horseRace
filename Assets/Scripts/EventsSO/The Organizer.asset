@@ -18,5 +18,5 @@ MonoBehaviour:
     dar\xE9 un empuj\xF3n, sus lanzamientos bajos ser\xE1n +2 en la pr\xF3xima carrera.\r\n"
   eventType: 2
   minRound: 9
-  maxRound: 14
+  maxRound: 16
   effect: {fileID: 11400000, guid: 2fc7bc9dd25ae9043b5a912f9acf82e0, type: 2}

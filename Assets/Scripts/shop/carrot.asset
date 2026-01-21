@@ -16,6 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300000, guid: 15a7a9c45700eb446b0c36c550fe2cae, type: 3}
   title: CARROT
   description: +2 guaranteed on any of your shots on the next roll
-  price: 2
+  price: 5
   itemType: 1
   effect: {fileID: 11400000, guid: a975074c82107f149a8030c5ed042408, type: 2}

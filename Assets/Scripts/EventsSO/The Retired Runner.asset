@@ -18,5 +18,5 @@ MonoBehaviour:
     efectivo. En tu futura carrera, todos tus tiros ser\xE1n un poco m\xE1s dif\xEDciles."
   eventType: 2
   minRound: 1
-  maxRound: 14
+  maxRound: 19
   effect: {fileID: 11400000, guid: 986612376f09b1c4295e94c2367ea6fd, type: 2}

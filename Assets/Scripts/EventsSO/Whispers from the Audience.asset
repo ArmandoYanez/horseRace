@@ -18,5 +18,5 @@ MonoBehaviour:
     nadie gana sin ensuciarse las manos."
   eventType: 0
   minRound: 3
-  maxRound: 10
+  maxRound: 19
   effect: {fileID: 0}

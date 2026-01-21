@@ -18,5 +18,5 @@ MonoBehaviour:
     la excepci\xF3n, Buena suerte chico, no tengo nada para recomendar."
   eventType: 0
   minRound: 1
-  maxRound: 8
+  maxRound: 11
   effect: {fileID: 0}

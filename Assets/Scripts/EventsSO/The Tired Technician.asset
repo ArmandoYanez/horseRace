@@ -18,5 +18,5 @@ MonoBehaviour:
     cuantas rondas, voy a aflojar una marcha. Ese d\xEDa no correr\xE1 tan bien."
   eventType: 2
   minRound: 1
-  maxRound: 14
+  maxRound: 19
   effect: {fileID: 11400000, guid: 89ac0af93804560408db9841a7524865, type: 2}

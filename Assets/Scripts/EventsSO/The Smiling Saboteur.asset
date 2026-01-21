@@ -18,5 +18,5 @@ MonoBehaviour:
     carrera, pero tendr\xE1s que jugar con cuidado. Esta vez no hay tiros seguros."
   eventType: 2
   minRound: 5
-  maxRound: 14
+  maxRound: 18
   effect: {fileID: 11400000, guid: fd18ddf0082cde04c87f30c409dd809b, type: 2}

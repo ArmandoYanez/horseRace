@@ -16,6 +16,6 @@ MonoBehaviour:
   icon: {fileID: 21300006, guid: 358b5d9f23bc9413e87c9948acc67ee1, type: 3}
   title: LOW +1
   description: Your low shots give an extra +1
-  price: 15
+  price: 20
   itemType: 0
   effect: {fileID: 11400000, guid: c4384caf21c059448a81f07a475218a0, type: 2}

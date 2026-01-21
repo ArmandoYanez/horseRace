@@ -19,6 +19,6 @@ MonoBehaviour:
     a prop\xF3sito y luego har\xE9 algunos ajustes a la m\xE1quina. Si lo haces,
     tendr\xE1s una gran ventaja en futuras carreras."
   eventType: 2
-  minRound: 3
-  maxRound: 10
+  minRound: 6
+  maxRound: 19
   effect: {fileID: 11400000, guid: b84f0719d5fff6748b88943c32c37466, type: 2}

@@ -17,6 +17,6 @@ MonoBehaviour:
   title: CAMERA
   description: "The player who goes first will be deducted -2 \u200B\u200Bon their
     next turn"
-  price: 4
+  price: 10
   itemType: 1
   effect: {fileID: 11400000, guid: 49a2b7e88f02f1a49a1c39426e4cd4f1, type: 2}

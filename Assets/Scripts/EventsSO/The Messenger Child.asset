@@ -18,5 +18,5 @@ MonoBehaviour:
     A menos que alguien manipule la m\xE1quina."
   eventType: 0
   minRound: 3
-  maxRound: 10
+  maxRound: 17
   effect: {fileID: 0}
