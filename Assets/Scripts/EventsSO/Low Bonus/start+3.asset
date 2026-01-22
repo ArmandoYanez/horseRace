@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: New All Shots Bonus Future Effect
-  m_EditorClassIdentifier: Assembly-CSharp::AllShotsBonusFutureEffect
+  m_Script: {fileID: 11500000, guid: 904d04243d2e37845b5ca52749b24bff, type: 3}
+  m_Name: start+3
+  m_EditorClassIdentifier: 
   roundsAhead: 1
-  bonusAmount: 1
+  startingBonus: 5

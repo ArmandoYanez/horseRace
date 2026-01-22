@@ -19,4 +19,4 @@ MonoBehaviour:
   eventType: 2
   minRound: 5
   maxRound: 18
-  effect: {fileID: 11400000, guid: fd18ddf0082cde04c87f30c409dd809b, type: 2}
+  effect: {fileID: 11400000, guid: 5844e1cf3bebe9b43bc803f4c9bbeb2e, type: 2}

@@ -421,12 +421,48 @@ public class GameManager : MonoBehaviour
         if (isPlayer && bonusGain > 0)
         {
             spawner?.ShowBonusResult(bonusGain);
+            
+            AudioManager.Instance?.Play(
+                uiSfx,
+                ConstantManager.Sfx.Race.BonusPoints
+            );
+            
             yield return new WaitForSeconds(0.4f);
         }
 
         horseViews[i].UpdatePositionSmooth();
         yield return new WaitForSeconds(0.25f);
 
+        // ================= ENEMY DEBUFF PROGRAMADO =================
+        if (!isPlayer && !isBoss && baseGain > 0)
+        {
+            int enemyPenalty = GetEnemyDebuffForCurrentRound();
+
+            if (enemyPenalty > 0)
+            {
+                int maxBack =
+                    horses[i].currentPoints - horses[i].baseData.startingPoints;
+
+                int applied = Mathf.Clamp(enemyPenalty, 0, maxBack);
+
+                if (applied > 0)
+                {
+                    horses[i].currentPoints -= applied;
+
+                    horseViews[i].GetComponent<HorseResultSpawner>()
+                        ?.ShowCustomText("-" + applied, Color.red);
+
+                    AudioManager.Instance?.Play(
+                        uiSfx,
+                        ConstantManager.Sfx.Race.Negative
+                    );
+
+                    yield return new WaitForSeconds(0.35f);
+                    horseViews[i].UpdatePositionSmooth();
+                }
+            }
+        }
+        
         // ================= BOSS PUNISH PLAYER =================
         if (
             isBoss &&

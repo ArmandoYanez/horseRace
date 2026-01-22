@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 0}
-  m_Name: New Reward Bonus Effect
-  m_EditorClassIdentifier: Assembly-CSharp::RewardBonusEffect
+  m_Script: {fileID: 11500000, guid: 326b1c551d26d6a4c8bda685a31cc730, type: 3}
+  m_Name: Enemy-1
+  m_EditorClassIdentifier: 
   roundsAhead: 1
-  extraReward: 5
+  failPenalty: 1
