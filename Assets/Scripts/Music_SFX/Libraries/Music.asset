@@ -20,3 +20,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: ecf0cfad8be4490408503611c1a8a6bb, type: 3}
     volume: 1
     pitch: 1
+  - name: Music.Race.Intro
+    clip: {fileID: 8300000, guid: e9d665c603671b749aa08f3834ffb2bf, type: 3}
+    volume: 0.6
+    pitch: 1

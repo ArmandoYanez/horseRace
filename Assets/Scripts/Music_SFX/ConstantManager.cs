@@ -7,6 +7,7 @@ namespace Managers
             public static class Race
             {
                 public const string InRace = "Music.Race.InRace";
+                public const string Intro = "Music.Race.Intro";
             }
         }
         

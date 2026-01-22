@@ -13,7 +13,7 @@ public class GameFlowManager : MonoBehaviour
 
     void Start()
     {
-        hud.Show();
+        //hud.Show();
     }
     
     public void StartRace()
@@ -83,6 +83,11 @@ public class GameFlowManager : MonoBehaviour
             gameManager.ConsumeRound();
             hud.Show();
         });
+    }
+
+    public void howHud()
+    {
+        hud.Show();
     }
 
 }
