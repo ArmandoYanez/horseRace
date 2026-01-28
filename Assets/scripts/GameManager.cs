@@ -13,6 +13,15 @@ public class GameManager : MonoBehaviour
     public int currentRound = 1;
     public MMF_Player round_effect;
     public TextMeshProUGUI roundtxt;
+    
+    [Header("Boss Setup")]
+    [SerializeField] private int bossIndex = 4;
+    
+    [Header("Mandatory Boss Battle UI")]
+    [SerializeField] private GameObject shopButton;
+    [SerializeField] private GameObject talkButton;
+    [SerializeField] private GameObject RaceButton;
+    [SerializeField] private MMFeedback BossMMF;
 
     #region Event lists
     [Header("Scheduled Effects")]
@@ -88,7 +97,22 @@ public class GameManager : MonoBehaviour
     [Range(0f, 1f)]
     public float bossPunishChance = 0.35f; // 35% por defecto
     
+    [Header("Boss Swap Setup")]
+    [SerializeField] private HorseView bossHorseView;   // el caballo boss (GameObject desactivado al inicio)
+    [SerializeField] private int bossReplaceIndex = 2;  // caballo #3 => index 2 (0,1,2)
+    [SerializeField] private bool hideOtherEnemiesDuringBoss = true;
+
+    private HorseView originalHorseAtBossIndex;
+    
     bool cameraPending = false;
+    
+    [Header("Enemy Progressive Behavior")]
+    [Range(0f, 1f)] public float enemyFailChance = 0.2f;
+
+    [Range(0f, 1f)] public float enemyPunishChanceRound10 = 0.08f;
+    [Range(0f, 1f)] public float enemyPunishChanceRound15 = 0.15f;
+
+    [Range(0f, 1f)] public float enemyDoubleRollChanceRound15 = 0.1f;
     
     // cosas para el boss
     public bool isBossRace = false;
@@ -115,9 +139,30 @@ public class GameManager : MonoBehaviour
         return horses[playerIndex];
 
     }
+    
+    void LockMandatoryBossUI()
+    {
+        if (RaceButton != null)
+            RaceButton.SetActive(false);
+        
+        if (shopButton != null)
+            shopButton.SetActive(false);
+
+        if (talkButton != null)
+            talkButton.SetActive(false);
+
+        Debug.Log("⚠️ Boss Round: Shop y Talk desactivados");
+    }
+    
     public void ConsumeRound()
     {
         currentRound++;
+
+        if (currentRound == bossRound)
+        {
+            LockMandatoryBossUI();
+        }
+        
         updateIndicators.UpdateText();
         Debug.Log($"Round {currentRound}");
         round_effect.PlayFeedbacks();
@@ -215,6 +260,9 @@ public class GameManager : MonoBehaviour
 
     for (int i = 0; i < horses.Length; i++)
     {
+        if (!horseViews[i].gameObject.activeInHierarchy)
+            continue;
+        
         bool isPlayer = (i == playerIndex);
         bool isBoss = isBossRace && horses[i].baseData is BossHorseSO;
 
@@ -248,7 +296,7 @@ public class GameManager : MonoBehaviour
         }
 
         // ================= PEPPER SPRAY =================
-        if (!isPlayer && !isBoss && enemiesBlockedThisTurn > 0)
+        if (!isPlayer && enemiesBlockedThisTurn > 0)
         {
             enemiesBlockedThisTurn--;
 
@@ -264,7 +312,7 @@ public class GameManager : MonoBehaviour
         }
 
         // ================= RAT TRAP =================
-        if (!isBoss && BlockLeaderNextTurn && i == GetLeaderIndex())
+        if (BlockLeaderNextTurn && i == GetLeaderIndex())
         {
             horseViews[i].GetComponent<HorseResultSpawner>()
                 ?.ShowCustomText("TRAP", Color.red);
@@ -290,7 +338,7 @@ public class GameManager : MonoBehaviour
             yield return new WaitForSeconds(1f);
             continue;
         }
-
+        
         // ================= TIRADA BASE =================
         int rollGain = isBoss
             ? ResolveBossRoll(shotToUse)
@@ -333,6 +381,9 @@ public class GameManager : MonoBehaviour
 
             for (int e = 0; e < horses.Length; e++)
             {
+                if (!horseViews[i].gameObject.activeInHierarchy)
+                    continue;
+                
                 if (e == playerIndex) continue;
 
                 int maxBack =
@@ -376,7 +427,7 @@ public class GameManager : MonoBehaviour
         }
 
         // ================= BOSS DOUBLE ROLL =================
-        if (isBoss && UnityEngine.Random.value < 0.3f)
+        if (isBoss && UnityEngine.Random.value < 0.15f)
         {
             int extra = ResolveBossRoll(shotToUse);
             baseGain += extra;
@@ -385,6 +436,18 @@ public class GameManager : MonoBehaviour
                 ?.ShowResult(extra);
 
             yield return new WaitForSeconds(0.6f);
+        }
+        
+        // ================= ENEMY DOUBLE ROLL =================
+        if (!isPlayer && !isBoss && EnemyCanDoubleRoll())
+        {
+            int extra = ShotResolver.ResolvePureLuck(shotToUse);
+            baseGain += extra;
+
+            horseViews[i].GetComponent<HorseResultSpawner>()
+                ?.ShowResult(extra);
+
+            yield return new WaitForSeconds(0.5f);
         }
 
         // ================= BONUS =================
@@ -434,34 +497,64 @@ public class GameManager : MonoBehaviour
         yield return new WaitForSeconds(0.25f);
 
         // ================= ENEMY DEBUFF PROGRAMADO =================
-        if (!isPlayer && !isBoss && baseGain > 0)
+        if (!isPlayer && baseGain > 0)
         {
             int enemyPenalty = GetEnemyDebuffForCurrentRound();
 
-            if (enemyPenalty > 0)
+            int maxBack =
+                horses[i].currentPoints - horses[i].baseData.startingPoints;
+
+            int applied = Mathf.Clamp(enemyPenalty, 0, maxBack);
+
+            if (applied > 0)
             {
-                int maxBack =
-                    horses[i].currentPoints - horses[i].baseData.startingPoints;
+                horses[i].currentPoints -= applied;
 
-                int applied = Mathf.Clamp(enemyPenalty, 0, maxBack);
+                horseViews[i].GetComponent<HorseResultSpawner>()
+                    ?.ShowCustomText("-" + applied, Color.red);
 
-                if (applied > 0)
-                {
-                    horses[i].currentPoints -= applied;
+                AudioManager.Instance?.Play(
+                    uiSfx, ConstantManager.Sfx.Race.Negative
+                );
 
-                    horseViews[i].GetComponent<HorseResultSpawner>()
-                        ?.ShowCustomText("-" + applied, Color.red);
-
-                    AudioManager.Instance?.Play(
-                        uiSfx,
-                        ConstantManager.Sfx.Race.Negative
-                    );
-
-                    yield return new WaitForSeconds(0.35f);
-                    horseViews[i].UpdatePositionSmooth();
-                }
+                yield return new WaitForSeconds(0.35f);
+                horseViews[i].UpdatePositionSmooth();
             }
         }
+        
+        // ================= ENEMY PUNISH PLAYER =================
+        if (
+            !isPlayer &&
+            !isBoss &&
+            EnemyCanPunishPlayer() &&
+            horses[playerIndex].currentPoints >
+            horses[playerIndex].baseData.startingPoints
+        )
+        {
+            int punish = 1;
+
+            horses[playerIndex].currentPoints = Mathf.Max(
+                horses[playerIndex].baseData.startingPoints,
+                horses[playerIndex].currentPoints - punish
+            );
+
+            var playerSpawner =
+                horseViews[playerIndex].GetComponent<HorseResultSpawner>();
+
+            // Texto de intención (el enemigo anuncia la trampa)
+            playerSpawner?.ShowCustomText("TRAP", new Color(1f, 0.6f, 0.2f));
+
+            // Número de castigo
+            playerSpawner?.ShowCustomText("-" + punish, Color.red);
+
+            AudioManager.Instance?.Play(
+                uiSfx, ConstantManager.Sfx.Race.Negative
+            );
+
+            yield return new WaitForSeconds(0.35f);
+            horseViews[playerIndex].UpdatePositionSmooth();
+        }
+
         
         // ================= BOSS PUNISH PLAYER =================
         if (
@@ -528,380 +621,6 @@ public class GameManager : MonoBehaviour
         StartNewRound();
     }
     
-    /*
-    IEnumerator ResolveTurn(ShotType playerShot)
-    {
-        int carrotBonus = 0;
-        
-        resolvingTurn = true;
-        bool usedExtraRoll = false;
-
-        for (int i = 0; i < horses.Length; i++)
-        {
-            ShotType shotToUse =
-                (i == playerIndex)
-                    ? playerShot
-                    : AIShotChooser.ChooseShot();
-
-            bool isPlayer = (i == playerIndex);
-            
-            // BLOQUEAR ENEMIGOS POR PEPPER SPRAY
-            if (!isPlayer && enemiesBlockedThisTurn > 0)
-            {
-                enemiesBlockedThisTurn--;
-
-                HorseResultSpawner spawnerBlocked =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
-
-                if (spawnerBlocked != null)
-                {
-                    spawnerBlocked.ShowCustomText("NOPE", Color.red);
-                }
-
-                AudioManager.Instance?.Play(
-                    uiSfx,
-                    ConstantManager.Sfx.Race.Negative
-                );
-
-                yield return new WaitForSeconds(1f);
-                continue;
-            }
-
-            
-            if (BlockLeaderNextTurn)
-            {
-                int leaderIndex = GetLeaderIndex();
-
-                if (i == leaderIndex)
-                {
-                    HorseResultSpawner spawneraBlock =
-                        horseViews[i].GetComponent<HorseResultSpawner>();
-
-                    if (spawneraBlock != null)
-                    {
-                        spawneraBlock.ShowCustomText("trap", Color.red);
-                    }
-
-                    AudioManager.Instance.Play(
-                        uiSfx,
-                        ConstantManager.Sfx.Race.Negative
-                    );
-
-                    yield return new WaitForSeconds(1f);
-                    continue; 
-                }
-            }
-            
-            // BLOQUEAR LOW SHOT SI HAY VENTAJA INICIAL
-            if (isPlayer &&
-                shotToUse == ShotType.Low &&
-                lowDisabledThisRace)
-            {
-                HorseResultSpawner spawner_nope =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
-
-                if (spawner_nope != null)
-                {
-                    spawner_nope.ShowCustomText("NOPE", Color.red);
-                    AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
-                }
-
-                yield return new WaitForSeconds(1f);
-                yield return new WaitForSeconds(0.3f);
-                continue;
-            }
-
-            // BASE (resultado puro)
-            int rollGain = ShotResolver.ResolvePureLuck(shotToUse);
-            int baseGain = rollGain;
-            
-            // APLICAR BONUS PERMANENTE POR TIPO DE TIRO (SOLO JUGADOR)
-            if (isPlayer && rollGain > 0)
-            {
-                switch (shotToUse)
-                {
-                    case ShotType.High:
-                        baseGain += highShotModifier;
-                        break;
-
-                    case ShotType.Medium:
-                        baseGain += midShotModifier;
-                        break;
-
-                    case ShotType.Low:
-                        baseGain += lowShotModifier;
-                        break;
-                }
-            }
-            
-            if (isPlayer && swapMidActive && shotToUse == ShotType.Medium && rollGain > 0)
-            {
-                int hinder = rollGain + midShotModifier; 
-
-                // 1) tú no avanzas
-                baseGain = 0;
-
-                // 2) muestra "-X" en BLANCO (no FAIL)
-                HorseResultSpawner spPlayer = horseViews[i].GetComponent<HorseResultSpawner>();
-                if (spPlayer != null)
-                    spPlayer.ShowCustomText("-" + hinder, Color.white);
-
-                AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
-                yield return new WaitForSeconds(0.8f);
-
-                // 3) aplica retroceso a TODOS los enemigos inmediatamente
-                for (int e = 0; e < horses.Length; e++)
-                {
-                    if (e == playerIndex) continue;
-
-                    int maxBack = horses[e].currentPoints - horses[e].baseData.startingPoints;
-                    int applied = Mathf.Clamp(hinder, 0, maxBack);
-                    if (applied <= 0) continue;
-
-                    horses[e].currentPoints -= applied;
-
-                    HorseResultSpawner spE = horseViews[e].GetComponent<HorseResultSpawner>();
-                    if (spE != null)
-                        spE.ShowCustomText("-" + applied, Color.red);
-
-                    AudioManager.Instance?.Play(uiSfx, ConstantManager.Sfx.Race.Negative);
-
-                    // para que se note el retroceso
-                    yield return new WaitForSeconds(0.25f);
-                    horseViews[e].UpdatePositionSmooth();
-                }
-
-                // un respiro y seguimos con el turno del jugador normal (pero sin avance)
-                yield return new WaitForSeconds(0.25f);
-            }
-            
-            // APLICAR ZANAHORIA (BONO GARANTIZADO)
-            if (isPlayer && guaranteedBonusNextRoll > 0)
-            {
-                baseGain += guaranteedBonusNextRoll;
-
-                HorseResultSpawner spawnerBonus =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
-
-                if (spawnerBonus != null)
-                {
-                    spawnerBonus.ShowBonusResult(guaranteedBonusNextRoll);
-                }
-
-                guaranteedBonusNextRoll = 0; 
-                yield return new WaitForSeconds(0.8f);
-            }
-            
-            if (isPlayer && playerExtraRolls > 0)
-            {
-                usedExtraRoll = true;
-                
-                HorseResultSpawner spawnerExtra =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
-
-                // mostrar PRIMER resultado
-                if (spawnerExtra != null)
-                {
-                    spawnerExtra.ShowResult(baseGain);
-                    yield return new WaitForSeconds(0.8f);
-                }
-
-                // segunda tirada REAL
-                int secondGain = ShotResolver.ResolvePureLuck(shotToUse);
-                baseGain += secondGain;
-                playerExtraRolls--;
-
-                if (spawnerExtra != null)
-                {
-                    spawnerExtra.ShowResult(secondGain);
-                    yield return new WaitForSeconds(0.8f);
-                }
-            }
-            
-            
-            bool enemyAdvancedThisTurn = !isPlayer && baseGain > 0;
-
-            // PENALIZAR AL LÍDER EN SU TURNO (CAMERA)
-            if (leaderPenaltyNextTurn > 0 && i == GetLeaderIndex())
-            {
-                horses[i].currentPoints =
-                    Mathf.Max(
-                        horses[i].baseData.startingPoints,
-                        horses[i].currentPoints - leaderPenaltyNextTurn
-                    );
-
-                HorseResultSpawner spawnerPenalty =
-                    horseViews[i].GetComponent<HorseResultSpawner>();
-
-                if (spawnerPenalty != null)
-                {
-                    spawnerPenalty.ShowCustomText(
-                        "-" + leaderPenaltyNextTurn,
-                        Color.red
-                    );
-                }
-
-                AudioManager.Instance?.Play(
-                    uiSfx,
-                    ConstantManager.Sfx.Race.Negative
-                );
-
-                leaderPenaltyNextTurn = 0;
-
-                yield return new WaitForSeconds(0.35f);
-                horseViews[i].UpdatePositionSmooth();
-            }
-            
-            // BONUS (SOLO JUGADOR)
-            int bonusGain = 0;
-
-            if (isPlayer)
-            {
-                bonusGain += permanentAllShotsBonus;
-                bonusGain += GetAllShotsBonusForCurrentRound();
-
-                if (shotToUse == ShotType.Low)
-                {
-                    bonusGain += GetLowRiskBonusForCurrentRound();
-                }
-            }
-
-            // OTAL REAL (SE SUMA SOLO UNA VEZ)
-            int totalGain = baseGain + bonusGain;
-            horses[i].currentPoints += totalGain;
-
-            // MOSTRAR RESULTADO PRIMERO
-            HorseResultSpawner spawner =
-                horseViews[i].GetComponent<HorseResultSpawner>();
-            if (AudioManager.Instance != null && uiSfx != null)
-            {
-                AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.PopScore);
-            }
-            
-            bool swapMidSuccess = (isPlayer && swapMidActive && shotToUse == ShotType.Medium && rollGain > 0);
-            
-            if (spawner != null)
-            {
-                if (!usedExtraRoll && !swapMidSuccess) 
-                {
-                    spawner.ShowResult(baseGain);
-                }
-                yield return new WaitForSeconds(0.8f);
-                
-                if (isPlayer && bonusGain > 0)
-                {
-                    spawner.ShowBonusResult(bonusGain);
-                    AudioManager.Instance.Play(uiSfx, ConstantManager.Sfx.Race.BonusPoints);
-                    yield return new WaitForSeconds(0.4f);
-                }
-            }
-
-            // ESPERAR A QUE SE LEA EL RESULTADO
-            yield return new WaitForSeconds(1f);
-            
-            horseViews[i].UpdatePositionSmooth();
-
-            // espera pequeña para que se vea el avance
-            yield return new WaitForSeconds(0.35f);
-
-            // APLICAR DEBUFF DESPUÉS DEL AVANCE (ENEMIGOS)
-            if (enemyAdvancedThisTurn)
-            {
-                int enemyPenalty = GetEnemyDebuffForCurrentRound();
-
-                if (enemyPenalty > 0)
-                {
-                    int maxBack =
-                        horses[i].currentPoints - horses[i].baseData.startingPoints;
-
-                    int penaltyApplied =
-                        Mathf.Clamp(enemyPenalty, 0, maxBack);
-
-                    if (penaltyApplied > 0)
-                    {
-                        horses[i].currentPoints -= penaltyApplied;
-
-                        HorseResultSpawner spawnerDebuff =
-                            horseViews[i].GetComponent<HorseResultSpawner>();
-
-                        if (spawnerDebuff != null)
-                        {
-                            spawnerDebuff.ShowCustomText(
-                                "-" + penaltyApplied,
-                                Color.red
-                            );
-
-                            if (AudioManager.Instance != null && uiSfx != null)
-                            {
-                                AudioManager.Instance.Play(
-                                    uiSfx,
-                                    ConstantManager.Sfx.Race.Negative
-                                );
-                            }
-                        }
-
-                        yield return new WaitForSeconds(0.35f);
-                        horseViews[i].UpdatePositionSmooth();
-                    }
-                }
-            }
-
-            // respiro antes del siguiente caballo
-            yield return new WaitForSeconds(0.25f);
-            
-        }
-
-        // CHECAR GANADOR
-        for (int i = 0; i < horses.Length; i++)
-        {
-            if (horses[i].currentPoints >= horses[i].baseData.pointsToWin)
-            {
-                bool playerWon = (i == playerIndex);
-
-                if (playerWon)
-                {
-                    int baseReward = 10; 
-                    int bonusReward = GetRewardBonusForCurrentRound();
-
-                    int totalReward = baseReward;
-
-                    Debug.Log($"PLAYER WINS! Reward: {totalReward}");
-
-                    // Aquí sumas el dinero al jugador
-                    int reward = GetMoneyRewardForRound(currentRound);
-                    EconomyManager.Instance.AddMoney(reward);
-                }
-                else
-                {
-                    Debug.Log($"{horses[i].baseData.horseName} WINS");
-                    
-                    if (currentRound == lossRoundForPermanentAllShots)
-                    {
-                        permanentAllShotsBonus += 1;
-                        lossRoundForPermanentAllShots = -1;
-
-                        Debug.Log("Permanent All-Shots +1 unlocked FOREVER");
-                    }
-                    
-                    CheckLossConditions();
-                }
-                ConsumeRound();
-                Debug.Log($"Round {currentRound}");
-
-                yield return new WaitForSeconds(1f);
-                CleanupRoundEffects();
-                BlockLeaderNextTurn = false;
-                ResetRace();
-                yield break;
-            }
-        }
-
-        resolvingTurn = false;
-        //currentRound++;
-        
-        StartNewRound();
-    }
-    */
     void ResetRace()
     {
         isBossRace = false;
@@ -913,6 +632,9 @@ public class GameManager : MonoBehaviour
 
         for (int i = 0; i < horses.Length; i++)
         {
+            if (!horseViews[i].gameObject.activeInHierarchy)
+                continue;
+            
             horses[i].currentPoints = horses[i].baseData.startingPoints;
             horseViews[i].UpdatePositionSmooth();
         }
@@ -930,12 +652,32 @@ public class GameManager : MonoBehaviour
             Debug.Log($"Starting Round  {currentRound}");
         }
         
+        
+        
         Debug.Log($"Starting Round {currentRound}");
         updateIndicators.UpdateText();
         ApplyStartingBonuses();
 
         turnUI.Show();
     }
+    
+    void UpdateMandatoryBattleUI()
+    {
+        bool isMandatoryBossRound = currentRound == bossRound;
+        
+        if (isMandatoryBossRound)
+        {
+               RaceButton.GetComponent<TextMeshProUGUI>().text = "BOSS RACE";
+               RaceButton.GetComponent<TextMeshProUGUI>().color = Color.red;
+        }
+        
+        if (shopButton != null)
+            shopButton.SetActive(!isMandatoryBossRound);
+
+        if (talkButton != null)
+            talkButton.SetActive(!isMandatoryBossRound);
+    }
+    
     void ApplyStartingBonuses()
     {
         // bonus de eventos programados
@@ -1150,6 +892,9 @@ public class GameManager : MonoBehaviour
 
         for (int i = 1; i < horses.Length; i++)
         {
+            if (!horseViews[i].gameObject.activeInHierarchy)
+                continue;
+            
             if (horses[i].currentPoints > maxPoints)
             {
                 maxPoints = horses[i].currentPoints;
@@ -1218,7 +963,7 @@ public class GameManager : MonoBehaviour
     ShotType ChooseBossShot()
     {
         int r = UnityEngine.Random.Range(0, 100);
-        if (r < 50) return ShotType.High;
+        if (r < 30) return ShotType.High;
         if (r < 80) return ShotType.Medium;
         return ShotType.Low;
     }
@@ -1233,4 +978,129 @@ public class GameManager : MonoBehaviour
             default: return 0;
         }
     }
+
+
+    #region Helpers
+
+    bool EnemyCanPunishPlayer()
+    {
+        if (currentRound < 10) return false;
+
+        float chance =
+            currentRound < 15
+                ? enemyPunishChanceRound10
+                : enemyPunishChanceRound15;
+
+        return UnityEngine.Random.value < chance;
+    }
+
+    bool EnemyCanDoubleRoll()
+    {
+        if (currentRound < 15) return false;
+
+        return UnityEngine.Random.value < enemyDoubleRollChanceRound15;
+    }
+
+    bool EnemyFails()
+    {
+        // Los enemigos normales SIEMPRE pueden fallar
+        return UnityEngine.Random.value < enemyFailChance;
+    }
+
+
+    #endregion
+    
+    public void PrepareBossIntroScene()
+    {
+        // Solo hacer esto si realmente estamos en boss round
+        if (currentRound < bossRound) return;
+
+        // 1) Guardar el horse view original (caballo #3 normal)
+        if (originalHorseAtBossIndex == null)
+            originalHorseAtBossIndex = horseViews[bossReplaceIndex];
+
+        // 2) Colocar el boss en la misma posición del caballo #3
+        if (bossHorseView != null && originalHorseAtBossIndex != null)
+        {
+            bossHorseView.transform.position = originalHorseAtBossIndex.transform.position;
+            bossHorseView.transform.rotation = originalHorseAtBossIndex.transform.rotation;
+        }
+
+        // 3) Apagar caballo #3 normal y prender boss
+        if (originalHorseAtBossIndex != null)
+            originalHorseAtBossIndex.gameObject.SetActive(false);
+
+        if (bossHorseView != null)
+            bossHorseView.gameObject.SetActive(true);
+
+        // 4) Opcional: ocultar otros enemigos (pero NO el player)
+        if (hideOtherEnemiesDuringBoss)
+        {
+            for (int i = 0; i < horseViews.Length; i++)
+            {
+                if (i == playerIndex) continue;
+                if (i == bossReplaceIndex) continue;
+
+                horseViews[i].gameObject.SetActive(false);
+            }
+        }
+
+        // 5) Reemplazar referencia del array para que el sistema use al boss como "caballo 3"
+        horseViews[bossReplaceIndex] = bossHorseView;
+
+        // 6) Re-inicializar runtime del índice reemplazado para que tenga el SO del boss
+        if (horses != null && bossHorseView != null)
+        {
+            horses[bossReplaceIndex] = new HorseRuntime(bossHorseView.horseData);
+            bossHorseView.Initialize(horses[bossReplaceIndex]);
+        }
+
+        // 7) Marcar que es boss race y activar reglas
+        ActivateBossRace();
+    }
+    
+    public void ActivateBossOnlyRace()
+    {
+        if (!HasRaceInitialized)
+        {
+            Debug.Log("⚠️ Race not initialized yet, initializing now");
+            InitRaceData();
+        }
+
+        if (bossIndex < 0 || bossIndex >= horseViews.Length)
+        {
+            Debug.LogError($"❌ BossIndex fuera de rango: {bossIndex}");
+            return;
+        }
+
+        if (horses == null || horses.Length <= bossIndex)
+        {
+            Debug.LogError("❌ Horses array no inicializado o muy corto");
+            return;
+        }
+
+        isBossRace = true;
+
+        for (int i = 0; i < horseViews.Length; i++)
+        {
+            bool isPlayer = (i == playerIndex);
+            bool isBoss = (i == bossIndex);
+
+            horseViews[i].gameObject.SetActive(isPlayer || isBoss);
+        }
+
+        // Asegurar que el boss esté activo
+        horseViews[bossIndex].gameObject.SetActive(true);
+
+        // Re-inicializar runtime SOLO para los que corren
+        horses[playerIndex] = new HorseRuntime(horseViews[playerIndex].horseData);
+        horses[bossIndex]   = new HorseRuntime(horseViews[bossIndex].horseData);
+
+        horseViews[playerIndex].Initialize(horses[playerIndex]);
+        horseViews[bossIndex].Initialize(horses[bossIndex]);
+
+        Debug.Log("🔥 Boss Only Race Activated (Player vs Boss)");
+    }
+
+
 }

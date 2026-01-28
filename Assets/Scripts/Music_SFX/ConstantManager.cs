@@ -8,6 +8,7 @@ namespace Managers
             {
                 public const string InRace = "Music.Race.InRace";
                 public const string Intro = "Music.Race.Intro";
+                public const string boss = "Music.Race.boss";
             }
         }
         

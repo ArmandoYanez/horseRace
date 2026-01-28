@@ -31,4 +31,12 @@ public class MusicLevelManager : MonoBehaviour
         AudioManager.Instance.SetVolume(ConstantManager.Music.Race.InRace, 0);
         AudioManager.Instance.FadeIn(ConstantManager.Music.Race.InRace, 0.5f, 0.5f);
     }
+    
+    public void bossFase1()
+    {
+        AudioManager.Instance.SetVolume(ConstantManager.Music.Race.InRace, 0);
+        AudioManager.Instance.SetVolume(ConstantManager.Music.Race.Intro, 0);
+        AudioManager.Instance.Play(currentSceneAudioLibrary, ConstantManager.Music.Race.boss);
+        AudioManager.Instance.FadeIn(ConstantManager.Music.Race.boss, 0.5f, 0.5f);
+    }
 }

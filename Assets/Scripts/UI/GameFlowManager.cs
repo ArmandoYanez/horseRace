@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Playables;
 
 public class GameFlowManager : MonoBehaviour
 {
@@ -9,6 +10,11 @@ public class GameFlowManager : MonoBehaviour
     public EventUI eventUI;
     public ShopUI shopUI;
 
+    public bool bossRound = false;
+    
+    [Header("Boss Intro")]
+    [SerializeField] private PlayableDirector bossIntroDirector;
+    
     // ---------------- FLOWS ----------------
 
     void Start()
@@ -18,12 +24,38 @@ public class GameFlowManager : MonoBehaviour
     
     public void StartRace()
     {
+        
+        // Si es boss round, NO iniciar carrera directo
+        if (gameManager.currentRound >= gameManager.bossRound)
+        {
+            hud.Hide();
+
+            // Preparar escena
+            
+
+            // Reproducir cinemática
+            bossIntroDirector.stopped -= OnBossIntroFinished;
+            bossIntroDirector.stopped += OnBossIntroFinished;
+            bossIntroDirector.Play();
+            return;
+        }
+        
         gameManager.StartRaceFlow();
         hud.Hide();
+    }
+    
+    private void OnBossIntroFinished(PlayableDirector d)
+    {
+        bossIntroDirector.stopped -= OnBossIntroFinished;
+        gameManager.ActivateBossOnlyRace();
+        gameManager.StartRaceFlow();
     }
 
     public void StartTalk()
     {
+        if (gameManager.currentRound == gameManager.bossRound)
+            return;
+        
         hud.Hide();
         
         Debug.Log($"eventUI null? {eventUI == null}");
@@ -76,6 +108,9 @@ public class GameFlowManager : MonoBehaviour
     
     public void StartShop()
     {
+        if (gameManager.currentRound == gameManager.bossRound)
+            return;
+        
         hud.Hide();
 
         shopUI.Show(() =>

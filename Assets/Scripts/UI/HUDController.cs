@@ -1,3 +1,4 @@
+using Managers;
 using UnityEngine;
 using MoreMountains.Feedbacks;
 
@@ -5,17 +6,43 @@ public class HUDController : MonoBehaviour
 {
     public MMF_Player enterFeedback;
     public MMF_Player exitFeedback;
+    
+    public MMF_Player enterFeedbackBoss;
+    public MMF_Player exitFeedbackBoss;
 
     public GameFlowManager flowManager;
 
     public void Show()
     {
-        enterFeedback.PlayFeedbacks();
+        bool isBossRound =
+            flowManager.gameManager.currentRound >=
+            flowManager.gameManager.bossRound;
+
+        if (isBossRound)
+        {
+            enterFeedbackBoss.PlayFeedbacks();
+            AudioManager.Instance.FadeOut(ConstantManager.Music.Race.InRace, 1f);
+        }
+        else
+        {
+            enterFeedback.PlayFeedbacks();
+        }
     }
 
     public void Hide()
     {
-        exitFeedback.PlayFeedbacks();
+        bool isBossRound =
+            flowManager.gameManager.currentRound >=
+            flowManager.gameManager.bossRound;
+
+        if (isBossRound)
+        {
+            exitFeedbackBoss.PlayFeedbacks();
+        }
+        else
+        {
+            exitFeedback.PlayFeedbacks();
+        }
     }
 
     // BOTONES ----------------

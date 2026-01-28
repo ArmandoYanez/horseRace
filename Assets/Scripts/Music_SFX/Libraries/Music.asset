@@ -24,3 +24,7 @@ MonoBehaviour:
     clip: {fileID: 8300000, guid: e9d665c603671b749aa08f3834ffb2bf, type: 3}
     volume: 0.6
     pitch: 1
+  - name: Music.Race.boss
+    clip: {fileID: 8300000, guid: afbf70ee6639b4943a44e297b58d054e, type: 3}
+    volume: 0.6
+    pitch: 1
